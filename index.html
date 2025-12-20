@@ -7,26 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --miku: #39c5bb; }
+        :root { --miku: #39c5bb; --miku-blue: #2563eb; }
         body { font-family: 'Lexend', sans-serif; background-color: #050a09; color: #e6f7f6; overflow-x: hidden; }
         .miku-text { color: var(--miku); }
         
-        /* Menu Navigation - Giãn cách đều nhau */
         .nav-link {
             transition: all 0.3s ease;
-            width: 100px; /* Cố định độ rộng để khoảng cách đều nhau */
+            width: 80px; 
             text-align: center;
-            padding: 8px 0;
+            padding: 6px 0;
             border-radius: 9999px;
             border: 1px solid transparent;
             color: #ffffff;
             display: inline-block;
         }
         
-        /* Hiệu ứng chọn - Giống chữ Contact trong hình của bạn */
         .nav-link.active {
             color: var(--miku) !important;
-            border: 1px solid rgba(57, 197, 187, 0.6) !important;
+            border: 1px solid rgba(57, 197, 187, 0.5) !important;
         }
 
         .avatar-frame {
@@ -38,7 +36,17 @@
         }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Timeline công việc */
+        /* Skill Tag Style */
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #d1d5db;
+        }
+
         .timeline-container { 
             position: relative; 
             border-left: 1.5px solid rgba(57, 197, 187, 0.2); 
@@ -64,8 +72,9 @@
 
     <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/95 backdrop-blur-sm border-b border-[#39c5bb]/10">
         <div class="text-lg font-black miku-text uppercase">VTP Design</div>
-        <div class="flex space-x-2 md:space-x-6 text-[10px] font-bold uppercase tracking-widest">
+        <div class="flex space-x-1 md:space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <a href="#home" class="nav-link">Home</a>
+            <a href="#skills" class="nav-link">Skills</a>
             <a href="#career" class="nav-link">Career</a>
             <a href="#contact" class="nav-link">Contact</a>
         </div>
@@ -84,9 +93,39 @@
         </p>
     </section>
 
+    <section id="skills" class="py-24 px-6 max-w-5xl mx-auto border-t border-[#39c5bb]/10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <div>
+                <h3 class="text-2xl font-black mb-8 uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="skill-tag">Photoshop</span>
+                    <span class="skill-tag">Illustrator</span>
+                    <span class="skill-tag">InDesign</span>
+                    <span class="skill-tag">Figma</span>
+                    <span class="skill-tag">After Effect</span>
+                    <span class="skill-tag">Premiere</span>
+                    <span class="skill-tag">CapCut Pro</span>
+                </div>
+            </div>
+
+            <div class="bg-blue-600 p-8 rounded-2xl relative overflow-hidden group shadow-2xl shadow-blue-900/20">
+                <div class="relative z-10">
+                    <h3 class="text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
+                        🏆 GIẢI THƯỞNG NỔI BẬT
+                    </h3>
+                    <p class="text-lg font-bold leading-snug">
+                        Giải Nhất cuộc thi sáng tác biểu trưng (Logo) Mặt trận Tổ quốc Việt Nam huyện Củ Chi nhiệm kỳ 2024 - 2029.
+                    </p>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-8xl font-black text-white/10 select-none italic">
+                    WIN
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
         <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter">Lịch sử công việc</h2>
-        
         <div class="timeline-container">
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
@@ -95,55 +134,24 @@
                     <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 - Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Xây dựng hình ảnh, quay dựng video và phát triển nội dung số cho quán cafe để tăng độ nhận diện thương hiệu.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Xây dựng hình ảnh, quay dựng video và phát triển nội dung số cho quán cafe.</p>
             </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Toku Friends Fansub</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 - Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cho cộng đồng Tokusatsu với phong cách sáng tạo và hiện đại.</p>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Bắp Rang Bơ Media</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 - Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Phụ trách hậu kỳ video, quản lý nội dung và định hướng hình ảnh cho kênh Youtube 23.7K Subscribers.</p>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Golden Rooster Collection</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 - Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Quản lý và phát triển nội dung TikTok 356K Follower và Youtube 73,8K Subscriber chuyên về lĩnh vực đồ chơi mô hình cao cấp.</p>
-            </div>
-
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
                     <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 - Hiện tại</span>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 - 2024</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media Staff & Branding</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì sản phẩm, hệ thống bộ nhận diện thương hiệu và các ấn phẩm in ấn phục vụ quảng bá tại cửa hàng.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì, nhận diện thương hiệu và ấn phẩm truyền thông tại cửa hàng.</p>
             </div>
         </div>
     </section>
 
-    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 bg-[#050a09]">
+    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10">
         <h3 class="text-xl font-black mb-10 miku-text uppercase tracking-widest">Let's work together</h3>
         <p class="text-lg font-bold">phatvo.0401@gmail.com</p>
-        <p class="text-gray-500 text-[11px] mt-4 uppercase tracking-[0.2em]">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
+        <p class="text-gray-500 text-[11px] mt-4 uppercase tracking-[0.2em]">0384 772 414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
     </footer>
 
     <script>
@@ -156,13 +164,11 @@
             const windowHeight = window.innerHeight;
             const bodyHeight = document.documentElement.scrollHeight;
 
-            // Ưu tiên Contact khi ở đáy trang
             if (scrollPos + windowHeight >= bodyHeight - 100) {
                 current = "contact";
             } else {
                 sections.forEach((section) => {
-                    const sectionTop = section.offsetTop;
-                    if (scrollPos >= sectionTop - 150) {
+                    if (scrollPos >= section.offsetTop - 150) {
                         current = section.getAttribute("id");
                     }
                 });
@@ -175,10 +181,8 @@
                 }
             });
         }
-
         window.addEventListener("scroll", updateActiveMenu);
         window.addEventListener("load", updateActiveMenu);
     </script>
 </body>
 </html>
-
