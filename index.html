@@ -59,7 +59,7 @@
 
         /* PROJECT GRID HOVER */
         .project-card { position: relative; overflow: hidden; border-radius: 12px; background: #111; aspect-ratio: 16/10; }
-        .project-img { width: 100%; height: 100%; object-cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .project-overlay {
             position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, transparent 60%);
             display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
@@ -121,24 +121,30 @@
                 <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
             <h1 class="text-5xl md:text-8xl font-black mb-4 uppercase leading-none">VÕ THÀNH <span class="miku-text italic">PHÁT</span></h1>
-            <p class="text-[10px] font-bold tracking-[0.5em] text-gray-500 uppercase">Multimedia Specialist / Content Creator</p>
+            <p class="text-[10px] font-bold tracking-[0.5em] text-gray-500 uppercase">Graphic Designer / Content Creator</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mt-12 px-4">
             <div class="md:col-span-2 glass-card p-8 rounded-3xl reveal">
-                <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">About Me</h3>
+                <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">VỀ BẢN THÂN</h3>
                 <p class="text-2xl font-light leading-snug">
-                    Tôi là một người làm sáng tạo tại <span class="miku-text">Sài Gòn</span>, tập trung vào việc kết nối cảm xúc qua hình ảnh và video. Từ những nắp phén chai đến các thước phim triệu view, tôi luôn đi tìm sự hoàn mỹ trong từng chi tiết nhỏ.
+                    "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy <span class="miku-text">Cassette</span> cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
                 </p>
             </div>
             <div class="glass-card p-8 rounded-3xl reveal flex flex-col justify-between">
-                <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">Tools</h3>
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ps</span>
-                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ai</span>
-                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ae</span>
-                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Pr</span>
-                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Figma</span>
+                <div>
+                    <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">Học Vấn</h3>
+                    <p class="text-lg font-bold">Đại học Văn Lang</p>
+                    <p class="text-xs text-gray-500">Khoa Mỹ thuật & Thiết kế (K27)</p>
+                </div>
+                <div class="mt-6">
+                    <h3 class="miku-text text-xs font-bold tracking-widest mb-4 uppercase italic">Tools</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] font-bold bg-white/5 px-3 py-1 rounded">Ps</span>
+                        <span class="text-[10px] font-bold bg-white/5 px-3 py-1 rounded">Ai</span>
+                        <span class="text-[10px] font-bold bg-white/5 px-3 py-1 rounded">Ae</span>
+                        <span class="text-[10px] font-bold bg-white/5 px-3 py-1 rounded">Pr</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -150,7 +156,7 @@
                 <h2 class="text-4xl md:text-6xl font-black uppercase">Selected <span class="miku-text italic">Works</span></h2>
                 <p class="text-gray-500 mt-4 max-w-md">Danh sách các dự án tiêu biểu từ thiết kế bộ nhận diện đến sản xuất nội dung số.</p>
             </div>
-            <a href="https://www.behance.net/phatvo0401" class="text-[11px] font-bold border-b border-miku pb-1 miku-text mt-8 md:mt-0 tracking-widest">VIEW ALL BEHANCE</a>
+            <a href="https://www.behance.net/phatvo0401" class="text-[11px] font-bold border-b border-miku pb-1 miku-text mt-8 md:mt-0 tracking-widest uppercase">View Behance</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -159,7 +165,7 @@
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-2">Graphic Design</span>
                     <h4 class="text-2xl font-bold uppercase">Gaoogao Shop Branding</h4>
-                    <p class="text-gray-400 text-sm mt-2">Hệ thống nhận diện thương hiệu & bao bì sản phẩm.</p>
+                    <p class="text-gray-400 text-sm mt-2">Thiết kế bao bì và hệ thống nhận diện thương hiệu đồng bộ.</p>
                 </div>
             </div>
             <div class="project-card reveal" style="transition-delay: 0.1s">
@@ -167,7 +173,7 @@
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-2">Media Production</span>
                     <h4 class="text-2xl font-bold uppercase">Golden Rooster Collection</h4>
-                    <p class="text-gray-400 text-sm mt-2">Video nội dung TikTok 350K+ Followers.</p>
+                    <p class="text-gray-400 text-sm mt-2">TikTok (356K Followers) & YouTube (73.8K Subs).</p>
                 </div>
             </div>
         </div>
@@ -178,19 +184,30 @@
         <div class="space-y-16">
             <div class="reveal relative pl-8 border-l border-miku/30">
                 <div class="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-miku"></div>
-                <div class="flex justify-between items-start mb-2">
-                    <h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4>
-                    <span class="text-[10px] font-mono opacity-50">2024 - PRESENT</span>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold uppercase">Merjea_Somewhere-in-town</h4>
+                    <span class="text-[10px] font-mono miku-text font-bold bg-miku/10 px-2 py-1 rounded">2025 – PRESENT</span>
                 </div>
-                <p class="text-gray-400 text-sm leading-relaxed">Video Editor & Manager. Quản lý hậu kỳ cho kênh YouTube đạt mốc 23.7K Subscribers.</p>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số.</p>
             </div>
             <div class="reveal relative pl-8 border-l border-miku/30">
                 <div class="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-miku"></div>
-                <div class="flex justify-between items-start mb-2">
-                    <h4 class="text-xl font-bold uppercase">Merjea Town</h4>
-                    <span class="text-[10px] font-mono opacity-50">2025 - PRESENT</span>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold uppercase">Toku Friends Fansub</h4>
+                    <span class="text-[10px] font-mono miku-text font-bold bg-miku/10 px-2 py-1 rounded">2025 – PRESENT</span>
                 </div>
-                <p class="text-gray-400 text-sm leading-relaxed">Media & Content Creator. Xây dựng chiến lược hình ảnh đa nền tảng.</p>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng.</p>
+            </div>
+            <div class="reveal relative pl-8 border-l border-miku/30">
+                <div class="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-miku"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4>
+                    <span class="text-[10px] font-mono miku-text font-bold bg-miku/10 px-2 py-1 rounded">2024 – PRESENT</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách cho kênh YouTube 23.7K Subs.</p>
             </div>
         </div>
     </section>
@@ -198,12 +215,16 @@
     <button id="backToTop">↑</button>
 
     <footer id="contact" class="py-32 text-center border-t border-white/5 reveal">
-        <p class="text-[10px] tracking-[0.4em] text-gray-500 uppercase mb-8">Ready to start a project?</p>
-        <h3 class="text-4xl md:text-6xl font-black mb-12 uppercase italic">phatvo.0401@<span class="miku-text">gmail.com</span></h3>
+        <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
+        <p class="text-2xl md:text-4xl font-black mb-2 uppercase">phatvo.0401@gmail.com</p>
+        <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
         <div class="flex justify-center gap-10 text-[11px] font-bold tracking-widest opacity-60">
-            <a href="#" class="hover:text-miku transition-colors">FACEBOOK</a>
-            <a href="#" class="hover:text-miku transition-colors">INSTAGRAM</a>
-            <a href="#" class="hover:text-miku transition-colors">BEHANCE</a>
+            <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="hover:text-miku transition-colors uppercase">FACEBOOK</a>
+            <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="hover:text-miku transition-colors uppercase">INSTAGRAM</a>
+            <a href="https://www.behance.net/phatvo0401" target="_blank" class="hover:text-miku transition-colors uppercase">BEHANCE</a>
+        </div>
+        <div class="text-slate-600 text-[9px] uppercase tracking-[0.5em] pt-16">
+            © 2025 VTP Design — Võ Thành Phát
         </div>
     </footer>
 
