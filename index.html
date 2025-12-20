@@ -83,6 +83,7 @@
             width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
             position: relative;
+            flex-shrink: 0;
         }
         .nav-link.active {
             color: var(--miku) !important;
@@ -96,34 +97,36 @@
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            max-width: 100%;
+            padding: 2px 0;
         }
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (max-width: 768px) {
             .nav-link {
                 width: auto;
-                min-width: 70px;
-                padding: 6px 12px;
-                flex-shrink: 0;
-                font-size: 9px;
+                min-width: 60px;
+                padding: 4px 10px;
+                font-size: 8px;
+                letter-spacing: 0.1em;
+            }
+            #nav-menu {
+                gap: 4px;
             }
         }
 
-        /* PROJECT GRID STYLE - UPDATED: TITLE ALWAYS VISIBLE */
+        /* PROJECT GRID STYLE - TITLE ALWAYS VISIBLE */
         .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
         .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
         .project-overlay {
             position: absolute; 
             inset: 0; 
-            /* Gradient đậm hơn ở đáy để chữ luôn rõ trên mọi nền ảnh */
             background: linear-gradient(0deg, rgba(5,10,9,0.85) 0%, rgba(5,10,9,0.2) 50%, transparent 100%);
             display: flex; 
             flex-direction: column; 
             justify-content: flex-end; 
             padding: 24px;
-            opacity: 1; /* Luôn hiển thị */
+            opacity: 1; 
             transition: background 0.4s ease;
         }
 
@@ -190,25 +193,25 @@
     
     <div id="cursor"></div>
 
-    <nav class="fixed w-full z-50 py-4 px-4 md:px-10 flex justify-between items-center bg-[#050a09]/60 backdrop-blur-xl border-b border-white/5">
+    <nav class="fixed w-full z-50 py-3 px-4 md:px-10 flex justify-between items-center bg-[#050a09]/70 backdrop-blur-xl border-b border-white/5">
         <div class="flex flex-col flex-shrink-0 mr-4">
-            <div class="text-lg flex items-center tracking-tighter">
-                <span class="font-black miku-text mr-2 uppercase">VTP</span>
+            <div class="text-md md:text-lg flex items-center tracking-tighter">
+                <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
                 <span class="font-light text-white opacity-90">Design</span>
             </div>
-            <div class="flex items-center space-x-3 mt-1">
+            <div class="flex flex-col space-y-0.5 mt-1">
                 <div class="flex items-center space-x-1.5">
                     <div class="relative flex h-1.5 w-1.5">
                         <span class="ping-circle absolute inline-flex h-full w-full rounded-full bg-[#39c5bb] opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#39c5bb]"></span>
                     </div>
-                    <span class="text-[8px] font-bold uppercase tracking-widest text-gray-400">Available</span>
+                    <span class="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-gray-400">Available</span>
                 </div>
-                <span id="digital-clock" class="text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
+                <span id="digital-clock" class="text-[7px] md:text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
             </div>
         </div>
         
-        <div id="nav-menu" class="flex space-x-1 md:space-x-2 text-[10px] font-bold uppercase tracking-widest">
+        <div id="nav-menu" class="flex flex-grow justify-end space-x-1 text-[10px] font-bold uppercase tracking-widest">
             <a href="#home" class="nav-link active">Home</a>
             <a href="#projects" class="nav-link">Work</a>
             <a href="#skills" class="nav-link">Skills</a>
@@ -400,7 +403,9 @@
         function updateClock() {
             const now = new Date();
             const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            document.getElementById('digital-clock').textContent = now.toLocaleTimeString('en-US', options) + ' CỦ CHI, VN';
+            // Thu gọn clock trên mobile
+            const suffix = window.innerWidth < 768 ? '' : ' CỦ CHI, VN';
+            document.getElementById('digital-clock').textContent = now.toLocaleTimeString('en-US', options) + suffix;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -410,7 +415,7 @@
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
 
-            if (avatar) {
+            if (avatar && window.innerWidth > 1024) { // Chỉ chạy parallax trên máy tính
                 const moveX = (e.clientX - window.innerWidth / 2) / 30;
                 const moveY = (e.clientY - window.innerHeight / 2) / 30;
                 avatar.style.transform = `translate(${moveX}px, ${moveY}px)`;
