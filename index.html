@@ -11,7 +11,6 @@
         body { font-family: 'Lexend', sans-serif; background-color: #050a09; color: #e6f7f6; overflow-x: hidden; }
         .miku-text { color: var(--miku); }
         
-        /* CẬP NHẬT HIỆU ỨNG NAV-LINK */
         .nav-link {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 80px; text-align: center; padding: 6px 0;
@@ -19,7 +18,6 @@
             position: relative;
         }
         
-        /* Hiệu ứng khi di chuột qua (Hover) */
         .nav-link:hover {
             color: var(--miku);
             border-color: rgba(57, 197, 187, 0.3);
@@ -43,6 +41,12 @@
         .skill-tag {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; color: #d1d5db;
+            transition: all 0.3s ease;
+        }
+        .skill-tag:hover {
+            border-color: var(--miku);
+            color: white;
+            background: rgba(57, 197, 187, 0.1);
         }
 
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
@@ -52,6 +56,21 @@
             position: absolute; left: -7px; top: 7px; border: 2px solid #050a09;
         }
 
+        /* --- PHẦN STYLE CHO ANIMATION --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Delay cho các item xuất hiện lần lượt */
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        
         .social-link {
             transition: all 0.3s ease;
             color: #4a5d71; 
@@ -65,7 +84,7 @@
     <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/40 backdrop-blur-md border-b border-white/5">
         <div class="text-lg flex items-center tracking-tighter">
             <span class="font-black miku-text mr-2 uppercase">VTP</span>
-            <span class="font-light text-white opacity-90" style="text-transform: none !important;">Design</span>
+            <span class="font-light text-white opacity-90">Design</span>
         </div>
         <div class="flex space-x-1 md:space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <a href="#home" class="nav-link">Home</a>
@@ -76,42 +95,41 @@
     </nav>
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
-        <div class="text-center mb-16">
-            <div class="avatar-frame mb-8 mx-auto">
+        <div class="text-center mb-16 reveal active"> <div class="avatar-frame mb-8 mx-auto">
                 <img src="avt.JPG" alt="Võ Thành Phát" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
-            <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
-            <h2 class="text-[10px] font-bold tracking-[0.4em] mb-4 text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
+            <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
+            <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
-            <div class="text-left px-4">
-                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">Về bản thân</h3>
+            <div class="text-left px-4 reveal reveal-delay-1">
+                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
                 <p class="text-xl text-gray-300 leading-relaxed italic">
                     "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px]">
+                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-2">
                     <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">Học vấn</h4>
+                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4>
                         <p class="text-lg font-bold text-white leading-tight">Đại học Văn Lang</p>
                     </div>
-                    <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ Thuật và Thiết Kế (K27) - Ngành Thiết kế đồ họa</p>
+                    <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27) — Ngành Thiết kế Đồ họa</p>
                 </div>
-                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px]">
+                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-3">
                     <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">Thành tựu</h4>
-                        <p class="text-lg font-bold text-white leading-tight">Giải Nhất Thiết Kế Logo – Mặt trận Tổ quốc Việt Nam</p>
+                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4>
+                        <p class="text-lg font-bold text-white leading-tight">Giải Nhất Thiết kế Logo Mặt trận Tổ quốc Việt Nam</p>
                     </div>
-                    <p class="text-gray-500 text-[10px] mt-2">Huyện Củ Chi (Nhiệm kỳ 2024 - 2029)</p>
+                    <p class="text-gray-500 text-[10px] mt-2">Huyện Củ Chi (Nhiệm kỳ 2024 – 2029)</p>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="skills" class="py-20 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <div class="mb-16">
+        <div class="mb-16 reveal">
             <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
             <div class="flex flex-wrap gap-3">
                 <span class="skill-tag">Photoshop</span> 
@@ -124,89 +142,107 @@
             </div>
         </div>
 
-        <div>
+        <div class="reveal reveal-delay-1">
             <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG MỀM</h3>
             <div class="flex flex-wrap gap-3">
                 <span class="skill-tag">English</span> 
-                <span class="skill-tag">Quay video</span> 
-                <span class="skill-tag">Chụp ảnh</span>
+                <span class="skill-tag">Videography</span> 
+                <span class="skill-tag">Photography</span>
             </div>
         </div>
     </section>
 
     <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter">Kinh nghiệm làm việc</h2>
+        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">KINH NGHIỆM LÀM VIỆC</h2>
         
         <div class="timeline-container">
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
                     <h4 class="text-lg font-bold text-gray-100 uppercase">Merjea_Somewhere-in-town</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 - Hiện tại</span>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Xây dựng hình ảnh, quay dựng video và phát triển nội dung số cho quán cafe để tăng độ nhận diện thương hiệu.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số nhằm tối ưu hóa nhận diện thương hiệu.</p>
             </div>
 
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
                     <h4 class="text-lg font-bold text-gray-100 uppercase">Toku Friends Fansub</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 - Hiện tại</span>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cho cộng đồng Tokusatsu với phong cách đồ họa hiện đại, đột phá.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng với phong cách đồ họa hiện đại, đột phá.</p>
             </div>
 
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
                     <h4 class="text-lg font-bold text-gray-100 uppercase">Bắp Rang Bơ Media</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 - Hiện tại</span>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh Youtube 23.7K Subscribers.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh YouTube đạt hơn 23.7K Subscribers.</p>
             </div>
 
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
                     <h4 class="text-lg font-bold text-gray-100 uppercase">Golden Rooster Collection</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 - Hiện tại</span>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
                 <p class="text-gray-500 text-xs leading-relaxed">Phát triển nội dung đa nền tảng cho TikTok (356K Followers) và YouTube (73.8K Subscribers) trong phân khúc mô hình cao cấp.</p>
             </div>
 
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com Shop</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 - Hiện tại</span>
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media Staff & Branding</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì, hệ thống bộ nhận diện thương hiệu và các ấn phẩm in ấn phục vụ quảng bá cho cửa hàng.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì và hệ thống nhận diện thương hiệu đồng bộ, phục vụ chiến dịch quảng bá tại điểm bán.</p>
             </div>
         </div>
     </section>
 
-    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10">
-        <h3 class="text-xl font-black mb-10 miku-text italic" style="text-transform: none !important;">Let's work together</h3>
+    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
+        <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
         <p class="text-lg font-bold mb-2">phatvo.0401@gmail.com</p>
         <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
         
         <div class="flex justify-center gap-8 md:gap-16 mb-20 text-[10px] font-bold">
             <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
             <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
-            <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">BEHANCE</a>
+            <a href="https://www.behance.net/phatvo0401" target="_blank" class="social-link">BEHANCE</a>
         </div>
 
         <div class="text-slate-600 text-[10px] uppercase tracking-[0.5em] pt-8 border-t border-white/5">
-            © 2025 VTP Design - Portfolio Website - All Rights Reserved - Created by Võ Thành Phát
+            © 2025 VTP Design — Portfolio Website — All Rights Reserved — Created by Võ Thành Phát
         </div>
     </footer>
 
     <script>
+        // Xử lý hiệu ứng Reveal khi cuộn trang
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, {
+            threshold: 0.15 // Kích hoạt khi hiện 15% phần tử
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // Xử lý Active Menu cũ của bạn
         const sections = document.querySelectorAll("section, footer");
         const navLinks = document.querySelectorAll(".nav-link");
 
@@ -238,10 +274,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
