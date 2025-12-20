@@ -16,7 +16,7 @@
             cursor: none; 
         }
 
-        /* --- 1. LOADING SCREEN STYLE --- */
+        /* --- 1. LOADING SCREEN --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050a09; z-index: 10000;
@@ -24,130 +24,92 @@
             transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.8s;
         }
         #loader.hidden { opacity: 0; visibility: hidden; }
-        
-        .loader-logo {
-            font-size: 2rem; font-weight: 900; color: var(--miku);
-            letter-spacing: -0.05em; margin-bottom: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        .loader-bar {
-            width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1);
-            position: relative; overflow: hidden;
-        }
-        .loader-bar::after {
-            content: ""; position: absolute; left: -100%; top: 0; height: 100%; width: 100%;
-            background: var(--miku); animation: loading 1.5s infinite;
-        }
+        .loader-logo { font-size: 2rem; font-weight: 900; color: var(--miku); animation: pulse 1.5s infinite; }
+        .loader-bar { width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; margin-top: 20px; }
+        .loader-bar::after { content: ""; position: absolute; left: -100%; top: 0; height: 100%; width: 100%; background: var(--miku); animation: loading 1.5s infinite; }
         @keyframes loading { 0% { left: -100%; } 100% { left: 100%; } }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
 
-        /* --- 2. NOISE TEXTURE --- */
+        /* --- 2. SCROLL PROGRESS BAR --- */
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
+        #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
+
+        /* --- 3. STATUS PIN ANIMATION --- */
+        .ping-circle { animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+
+        /* --- UI COMPONENTS --- */
         body::before {
-            content: "";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0.03; pointer-events: none; z-index: 9998;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png');
         }
-
         .miku-text { color: var(--miku); }
-        
-        /* CUSTOM CURSOR */
         #cursor {
             width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 9999;
             transition: transform 0.15s ease-out, background 0.3s ease;
             transform: translate(-50%, -50%);
         }
-
-        /* GLASSMORPHISM CARD */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s ease;
         }
-        .glass-card:hover {
-            background: rgba(57, 197, 187, 0.05);
-            border-color: rgba(57, 197, 187, 0.3);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-        }
+        .glass-card:hover { transform: translateY(-8px); border-color: rgba(57, 197, 187, 0.3); }
 
-        /* NAV LINK ANIMATION */
-        .nav-link {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 80px; text-align: center; padding: 6px 0;
-            border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
-            position: relative;
+        /* PROJECT GRID HOVER */
+        .project-card { position: relative; overflow: hidden; border-radius: 12px; background: #111; aspect-ratio: 16/10; }
+        .project-img { width: 100%; height: 100%; object-cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .project-overlay {
+            position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, transparent 60%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
+            opacity: 0; transition: opacity 0.4s ease;
         }
-        .nav-link.active {
-            color: var(--miku) !important;
-            border: 1px solid rgba(57, 197, 187, 0.5) !important;
-            background: rgba(57, 197, 187, 0.1);
-        }
+        .project-card:hover .project-overlay { opacity: 1; }
+        .project-card:hover .project-img { transform: scale(1.08); }
 
-        /* AVATAR FRAME */
-        .avatar-frame {
-            width: 180px; height: 180px; border-radius: 50%;
-            border: 3px solid var(--miku); overflow: hidden; background: #111;
-            box-shadow: 0 0 25px rgba(57, 197, 187, 0.2);
-            transition: transform 0.2s ease-out;
-        }
+        .nav-link { transition: all 0.4s ease; width: 80px; text-align: center; color: #ffffff; }
+        .nav-link.active { color: var(--miku) !important; font-weight: bold; }
 
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
-
-        .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
-        .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
-        .timeline-dot { width: 12px; height: 12px; background: var(--miku); border-radius: 50%; position: absolute; left: -7px; top: 7px; border: 2px solid #050a09; }
-
-        /* REVEAL OPTIMIZED */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-            transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+        .reveal { opacity: 0; transform: translateY(30px) scale(0.95); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
         
-        section { scroll-margin-top: 100px; }
-
         #backToTop {
             position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px;
             border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku);
             color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px);
+            opacity: 0; visibility: hidden; transition: 0.3s;
         }
         #backToTop.show { opacity: 1; visibility: visible; }
-
-        .social-link { 
-            display: inline-block;
-            transition: color 0.3s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            color: #4a5d71; letter-spacing: 0.3em; 
-        }
-        .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); }
     </style>
 </head>
 <body class="scroll-smooth">
 
     <div id="loader">
-        <div class="loader-logo">VTP <span class="font-light text-white opacity-50">Design</span></div>
+        <div class="loader-logo uppercase tracking-tighter">VTP <span class="text-white opacity-30 font-light">2025</span></div>
         <div class="loader-bar"></div>
     </div>
 
+    <div id="progress-container"><div id="progress-bar"></div></div>
     <div id="cursor"></div>
 
-    <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/40 backdrop-blur-md border-b border-white/5">
-        <div class="text-lg flex items-center tracking-tighter">
-            <span class="font-black miku-text mr-2 uppercase">VTP</span>
-            <span class="font-light text-white opacity-90">Design</span>
+    <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/60 backdrop-blur-xl border-b border-white/5">
+        <div class="flex items-center space-x-4">
+            <div class="text-lg flex items-center tracking-tighter">
+                <span class="font-black miku-text mr-2 uppercase">VTP</span>
+                <span class="font-light text-white opacity-90 hidden md:inline">Design</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                <div class="relative flex h-2 w-2">
+                    <span class="ping-circle absolute inline-flex h-full w-full rounded-full bg-[#39c5bb] opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-[#39c5bb]"></span>
+                </div>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Available for Work</span>
+            </div>
         </div>
-        <div class="flex space-x-1 md:space-x-2 text-[10px] font-bold uppercase tracking-widest" id="nav-menu">
+        <div class="flex space-x-1 text-[10px] font-bold uppercase tracking-widest" id="nav-menu">
             <a href="#home" class="nav-link active">Home</a>
-            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#projects" class="nav-link">Work</a>
             <a href="#career" class="nav-link">Career</a>
             <a href="#contact" class="nav-link">Contact</a>
         </div>
@@ -155,221 +117,156 @@
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
         <div class="text-center mb-16 reveal active">
-            <div class="avatar-frame mb-8 mx-auto">
+            <div class="avatar-frame mb-8 mx-auto w-[180px] h-[180px] rounded-full border-2 border-miku overflow-hidden transition-transform duration-300">
                 <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
-            <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
-            <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
+            <h1 class="text-5xl md:text-8xl font-black mb-4 uppercase leading-none">VÕ THÀNH <span class="miku-text italic">PHÁT</span></h1>
+            <p class="text-[10px] font-bold tracking-[0.5em] text-gray-500 uppercase">Multimedia Specialist / Content Creator</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
-            <div class="text-left px-4 reveal">
-                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
-                <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
-                    "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mt-12 px-4">
+            <div class="md:col-span-2 glass-card p-8 rounded-3xl reveal">
+                <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">About Me</h3>
+                <p class="text-2xl font-light leading-snug">
+                    Tôi là một người làm sáng tạo tại <span class="miku-text">Sài Gòn</span>, tập trung vào việc kết nối cảm xúc qua hình ảnh và video. Từ những nắp phén chai đến các thước phim triệu view, tôi luôn đi tìm sự hoàn mỹ trong từng chi tiết nhỏ.
                 </p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4>
-                        <p class="text-lg font-bold text-white">Đại học Văn Lang</p>
-                    </div>
-                    <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27)</p>
-                </div>
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4>
-                        <p class="text-lg font-bold text-white">Giải Nhất Thiết kế Logo</p>
-                    </div>
-                    <p class="text-gray-500 text-[10px] mt-2">MTTQ Việt Nam - Huyện Củ Chi</p>
+            <div class="glass-card p-8 rounded-3xl reveal flex flex-col justify-between">
+                <h3 class="miku-text text-xs font-bold tracking-widest mb-6 uppercase">Tools</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ps</span>
+                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ai</span>
+                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Ae</span>
+                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Pr</span>
+                    <span class="text-[11px] font-bold bg-white/5 px-3 py-1 rounded">Figma</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="skills" class="py-20 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <div class="mb-16 reveal">
-            <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
-            <div class="flex flex-wrap gap-3">
-                <span class="skill-tag">Photoshop</span> <span class="skill-tag">Illustrator</span> <span class="skill-tag">InDesign</span> 
-                <span class="skill-tag">Figma</span> <span class="skill-tag">After Effects</span> <span class="skill-tag">Premiere Pro</span>
+    <section id="projects" class="py-32 px-6 max-w-7xl mx-auto border-t border-white/5">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+            <div>
+                <h2 class="text-4xl md:text-6xl font-black uppercase">Selected <span class="miku-text italic">Works</span></h2>
+                <p class="text-gray-500 mt-4 max-w-md">Danh sách các dự án tiêu biểu từ thiết kế bộ nhận diện đến sản xuất nội dung số.</p>
             </div>
+            <a href="https://www.behance.net/phatvo0401" class="text-[11px] font-bold border-b border-miku pb-1 miku-text mt-8 md:mt-0 tracking-widest">VIEW ALL BEHANCE</a>
         </div>
-        <div class="reveal">
-            <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG MỀM</h3>
-            <div class="flex flex-wrap gap-3">
-                <span class="skill-tag">English (B2)</span> <span class="skill-tag">Videography</span> <span class="skill-tag">Photography</span>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="project-card reveal">
+                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding">
+                <div class="project-overlay">
+                    <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-2">Graphic Design</span>
+                    <h4 class="text-2xl font-bold uppercase">Gaoogao Shop Branding</h4>
+                    <p class="text-gray-400 text-sm mt-2">Hệ thống nhận diện thương hiệu & bao bì sản phẩm.</p>
+                </div>
+            </div>
+            <div class="project-card reveal" style="transition-delay: 0.1s">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video">
+                <div class="project-overlay">
+                    <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-2">Media Production</span>
+                    <h4 class="text-2xl font-bold uppercase">Golden Rooster Collection</h4>
+                    <p class="text-gray-400 text-sm mt-2">Video nội dung TikTok 350K+ Followers.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">KINH NGHIỆM LÀM VIỆC</h2>
-        <div class="timeline-container">
-            <div class="timeline-item reveal">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Merjea_Somewhere-in-town</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
+    <section id="career" class="py-32 px-6 max-w-4xl mx-auto border-t border-white/5">
+        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">Experience</h2>
+        <div class="space-y-16">
+            <div class="reveal relative pl-8 border-l border-miku/30">
+                <div class="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-miku"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4>
+                    <span class="text-[10px] font-mono opacity-50">2024 - PRESENT</span>
                 </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số nhằm tối ưu hóa nhận diện thương hiệu.</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Video Editor & Manager. Quản lý hậu kỳ cho kênh YouTube đạt mốc 23.7K Subscribers.</p>
             </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Toku Friends Fansub</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
+            <div class="reveal relative pl-8 border-l border-miku/30">
+                <div class="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-miku"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-xl font-bold uppercase">Merjea Town</h4>
+                    <span class="text-[10px] font-mono opacity-50">2025 - PRESENT</span>
                 </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng với phong cách đồ họa hiện đại, đột phá.</p>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Bắp Rang Bơ Media</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh YouTube đạt hơn 23.7K Subscribers.</p>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Golden Rooster Collection</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Phát triển nội dung đa nền tảng cho TikTok (356K Followers) và YouTube (73.8K Subscribers) trong phân khúc mô hình cao cấp.</p>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com Shop</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 – Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media Staff & Branding</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì và hệ thống nhận diện thương hiệu đồng bộ, phục vụ chiến dịch quảng bá tại điểm bán.</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Media & Content Creator. Xây dựng chiến lược hình ảnh đa nền tảng.</p>
             </div>
         </div>
     </section>
 
     <button id="backToTop">↑</button>
 
-    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
-        <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
-        <p class="text-lg font-bold mb-2">phatvo.0401@gmail.com</p>
-        <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
-        <div class="flex justify-center gap-8 md:gap-16 mb-20 text-[10px] font-bold">
-            <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
-            <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
-            <a href="https://www.behance.net/phatvo0401" target="_blank" class="social-link">BEHANCE</a>
-        </div>
-        <div class="text-slate-600 text-[9px] uppercase tracking-[0.5em] pt-8 border-t border-white/5">
-            © 2025 VTP Design — Portfolio Website — Võ Thành Phát
+    <footer id="contact" class="py-32 text-center border-t border-white/5 reveal">
+        <p class="text-[10px] tracking-[0.4em] text-gray-500 uppercase mb-8">Ready to start a project?</p>
+        <h3 class="text-4xl md:text-6xl font-black mb-12 uppercase italic">phatvo.0401@<span class="miku-text">gmail.com</span></h3>
+        <div class="flex justify-center gap-10 text-[11px] font-bold tracking-widest opacity-60">
+            <a href="#" class="hover:text-miku transition-colors">FACEBOOK</a>
+            <a href="#" class="hover:text-miku transition-colors">INSTAGRAM</a>
+            <a href="#" class="hover:text-miku transition-colors">BEHANCE</a>
         </div>
     </footer>
 
     <script>
-        // --- JS 1. LOADING SCREEN LOGIC ---
+        // --- 1. LOADER ---
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
-            setTimeout(() => {
-                loader.classList.add('hidden');
-            }, 1000); // Ẩn sau 1 giây để tạo độ mượt
+            setTimeout(() => loader.classList.add('hidden'), 1000);
         });
 
-        const cursor = document.getElementById('cursor');
-        const btt = document.getElementById('backToTop');
-        const sections = document.querySelectorAll("section, footer");
+        // --- 2. SCROLL PROGRESS & NAV ACTIVE ---
+        const progressBar = document.getElementById('progress-bar');
+        const sections = document.querySelectorAll("section");
         const navLinks = document.querySelectorAll(".nav-link");
-        const avatar = document.querySelector('.avatar-frame');
 
-        // --- JS 2. CURSOR & PARALLAX ---
+        window.addEventListener('scroll', () => {
+            // Progress Bar
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + "%";
+
+            // Nav Active
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) current = section.getAttribute("id");
+            });
+            navLinks.forEach(link => {
+                link.classList.remove("active");
+                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
+            });
+
+            // Back To Top
+            const btt = document.getElementById('backToTop');
+            if (window.pageYOffset > 400) btt.classList.add('show');
+            else btt.classList.remove('show');
+        });
+
+        // --- 3. CURSOR & AVATAR PARALLAX ---
+        const cursor = document.getElementById('cursor');
+        const avatar = document.querySelector('.avatar-frame');
+        
         document.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
-
+            
             if (avatar) {
-                const moveX = (e.clientX - window.innerWidth / 2) / 30;
-                const moveY = (e.clientY - window.innerHeight / 2) / 30;
-                avatar.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                const x = (window.innerWidth / 2 - e.clientX) / 25;
+                const y = (window.innerHeight / 2 - e.clientY) / 25;
+                avatar.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
             }
         });
 
-        // --- JS 3. MAGNETIC SOCIALS ---
-        const magnets = document.querySelectorAll('.social-link');
-        magnets.forEach((link) => {
-            link.addEventListener('mousemove', (e) => {
-                const bound = link.getBoundingClientRect();
-                const x = e.clientX - bound.left - bound.width / 2;
-                const y = e.clientY - bound.top - bound.height / 2;
-                link.style.transform = `translate(${x * 0.4}px, ${y * 0.4}px)`;
-            });
-            link.addEventListener('mouseleave', () => {
-                link.style.transform = `translate(0px, 0px)`;
-            });
-        });
-
-        // Interactive States
-        const interactives = document.querySelectorAll('a, button, .skill-tag, .glass-card');
-        interactives.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
-                cursor.style.background = 'rgba(57, 197, 187, 0.15)';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                cursor.style.background = 'transparent';
-            });
-        });
-
-        // Active Menu & BackToTop
-        function updateActiveMenu() {
-            let current = "";
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.documentElement.scrollHeight;
-
-            if (scrollPos + windowHeight >= bodyHeight - 100) {
-                current = "contact";
-            } else {
-                sections.forEach((section) => {
-                    const sectionTop = section.offsetTop;
-                    if (scrollPos >= sectionTop - 200) {
-                        current = section.getAttribute("id");
-                    }
-                });
-            }
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
-            });
-
-            if (scrollPos > 400) btt.classList.add('show');
-            else btt.classList.remove('show');
-        }
-
-        window.addEventListener("scroll", updateActiveMenu);
-        window.addEventListener("load", updateActiveMenu);
-        btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
-
+        // --- 4. INTERSECTION OBSERVER (REVEAL) ---
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) entry.target.classList.add('active');
             });
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        document.getElementById('backToTop').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
     </script>
 </body>
 </html>
-
-
