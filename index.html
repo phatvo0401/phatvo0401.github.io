@@ -1,188 +1,30 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Võ Thành Phát | Portfolio 2025</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --miku: #39c5bb; --miku-blue: #2563eb; }
-        body { font-family: 'Lexend', sans-serif; background-color: #050a09; color: #e6f7f6; overflow-x: hidden; }
-        .miku-text { color: var(--miku); }
-        
-        .nav-link {
-            transition: all 0.3s ease;
-            width: 80px; 
-            text-align: center;
-            padding: 6px 0;
-            border-radius: 9999px;
-            border: 1px solid transparent;
-            color: #ffffff;
-            display: inline-block;
-        }
-        
-        .nav-link.active {
-            color: var(--miku) !important;
-            border: 1px solid rgba(57, 197, 187, 0.5) !important;
-        }
-
-        .avatar-frame {
-            width: 180px; height: 180px;
-            border-radius: 50%;
-            border: 3px solid var(--miku);
-            overflow: hidden;
-            background: #111;
-        }
-        .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Skill Tag Style */
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #d1d5db;
-        }
-
-        .timeline-container { 
-            position: relative; 
-            border-left: 1.5px solid rgba(57, 197, 187, 0.2); 
-            margin-left: 1.5rem; 
-        }
-        .timeline-item { 
-            position: relative; 
-            padding-left: 2rem; 
-            margin-bottom: 3.5rem; 
-        }
-        .timeline-dot { 
-            width: 12px; height: 12px; 
-            background: var(--miku); 
-            border-radius: 50%; 
-            position: absolute; 
-            left: -7px; 
-            top: 7px;   
-            border: 2px solid #050a09;
-        }
-    </style>
-</head>
-<body class="scroll-smooth">
-
-    <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/95 backdrop-blur-sm border-b border-[#39c5bb]/10">
-        <div class="text-lg font-black miku-text uppercase">VTP Design</div>
-        <div class="flex space-x-1 md:space-x-2 text-[10px] font-bold uppercase tracking-widest">
-            <a href="#home" class="nav-link">Home</a>
-            <a href="#skills" class="nav-link">Skills</a>
-            <a href="#career" class="nav-link">Career</a>
-            <a href="#contact" class="nav-link">Contact</a>
-        </div>
-    </nav>
-
-    <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center px-4 pt-20">
-        <div class="avatar-frame mb-8">
-            <img src="avt.JPG" alt="Võ Thành Phát" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
-        </div>
-        <h2 class="text-[10px] font-bold tracking-[0.4em] mb-4 text-gray-500 uppercase">Creative Designer / Content Creator</h2>
-        <h1 class="text-4xl md:text-7xl font-black mb-6 uppercase">
-            VÕ THÀNH <span class="miku-text">PHÁT</span>
-        </h1>
-        <p class="max-w-md text-gray-400 mb-8 text-xs md:text-sm leading-relaxed px-4 italic">
-            "Người cầu toàn trong thiết kế, ngăn nắp trong tư duy. Yêu nhạc Cassette và những giá trị vượt thời gian."
-        </p>
-    </section>
-
-    <section id="skills" class="py-24 px-6 max-w-5xl mx-auto border-t border-[#39c5bb]/10">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            <div>
-                <h3 class="text-2xl font-black mb-8 uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
-                <div class="flex flex-wrap gap-3">
-                    <span class="skill-tag">Photoshop</span>
-                    <span class="skill-tag">Illustrator</span>
-                    <span class="skill-tag">InDesign</span>
-                    <span class="skill-tag">Figma</span>
-                    <span class="skill-tag">After Effect</span>
-                    <span class="skill-tag">Premiere</span>
-                    <span class="skill-tag">CapCut Pro</span>
-                </div>
-            </div>
-
-            <div class="bg-blue-600 p-8 rounded-2xl relative overflow-hidden group shadow-2xl shadow-blue-900/20">
-                <div class="relative z-10">
-                    <h3 class="text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest">
-                        🏆 GIẢI THƯỞNG NỔI BẬT
-                    </h3>
-                    <p class="text-lg font-bold leading-snug">
-                        Giải Nhất cuộc thi sáng tác biểu trưng (Logo) Mặt trận Tổ quốc Việt Nam huyện Củ Chi nhiệm kỳ 2024 - 2029.
-                    </p>
-                </div>
-                <div class="absolute -right-4 -bottom-4 text-8xl font-black text-white/10 select-none italic">
-                    WIN
-                </div>
+<section id="skills" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <div>
+            <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
+            <div class="flex flex-wrap gap-3">
+                <span class="skill-tag">Photoshop</span>
+                <span class="skill-tag">Illustrator</span>
+                <span class="skill-tag">InDesign</span>
+                <span class="skill-tag">Figma</span>
+                <span class="skill-tag">After Effect</span>
+                <span class="skill-tag">Premiere</span>
+                <span class="skill-tag">CapCut Pro</span>
             </div>
         </div>
-    </section>
 
-    <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter">Lịch sử công việc</h2>
-        <div class="timeline-container">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Merjea_Somewhere-in-town</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 - Hiện tại</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Xây dựng hình ảnh, quay dựng video và phát triển nội dung số cho quán cafe.</p>
+        <div class="bg-blue-600 p-8 rounded-2xl relative overflow-hidden group shadow-2xl shadow-blue-900/20 mt-10 md:mt-14">
+            <div class="relative z-10">
+                <h3 class="text-sm font-bold mb-6 flex items-center gap-2 uppercase tracking-widest text-white">
+                    🏆 GIẢI THƯỞNG NỔI BẬT
+                </h3>
+                <p class="text-lg font-bold leading-snug text-white">
+                    Giải Nhất cuộc thi sáng tác biểu trưng (Logo) Mặt trận Tổ quốc Việt Nam huyện Củ Chi nhiệm kỳ 2024 - 2029.
+                </p>
             </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
-                    <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com</h4>
-                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 - 2024</span>
-                </div>
-                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media Staff & Branding</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì, nhận diện thương hiệu và ấn phẩm truyền thông tại cửa hàng.</p>
+            <div class="absolute -right-4 -bottom-4 text-8xl font-black text-white/10 select-none italic">
+                WIN
             </div>
         </div>
-    </section>
-
-    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10">
-        <h3 class="text-xl font-black mb-10 miku-text uppercase tracking-widest">Let's work together</h3>
-        <p class="text-lg font-bold">phatvo.0401@gmail.com</p>
-        <p class="text-gray-500 text-[11px] mt-4 uppercase tracking-[0.2em]">0384 772 414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
-    </footer>
-
-    <script>
-        const sections = document.querySelectorAll("section, footer");
-        const navLinks = document.querySelectorAll(".nav-link");
-
-        function updateActiveMenu() {
-            let current = "";
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.documentElement.scrollHeight;
-
-            if (scrollPos + windowHeight >= bodyHeight - 100) {
-                current = "contact";
-            } else {
-                sections.forEach((section) => {
-                    if (scrollPos >= section.offsetTop - 150) {
-                        current = section.getAttribute("id");
-                    }
-                });
-            }
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
-            });
-        }
-        window.addEventListener("scroll", updateActiveMenu);
-        window.addEventListener("load", updateActiveMenu);
-    </script>
-</body>
-</html>
+    </div>
+</section>
