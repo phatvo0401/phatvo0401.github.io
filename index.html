@@ -361,7 +361,7 @@
 
         const cursor = document.getElementById('cursor');
         const btt = document.getElementById('backToTop');
-        const sections = document.querySelectorAll("section, footer");
+        const sections = document.querySelectorAll("section, footer"); // Footer ID là contact
         const navLinks = document.querySelectorAll(".nav-link");
         const avatar = document.querySelector('.avatar-frame');
         const progressBar = document.getElementById('progress-bar');
@@ -414,24 +414,34 @@
             });
         });
 
-        // --- JS 5. SCROLL EVENTS (Progress Bar, Active Menu, BackToTop) ---
+        // --- JS 5. SCROLL EVENTS (Sửa lỗi mục Contact bị mất hiệu ứng) ---
         function handleScroll() {
             const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const windowHeight = window.innerHeight;
+            const bodyHeight = document.documentElement.scrollHeight;
+            const totalScrollable = bodyHeight - windowHeight;
             
             // Progress Bar
-            const scrolled = (scrollPos / height) * 100;
+            const scrolled = (scrollPos / totalScrollable) * 100;
             progressBar.style.width = scrolled + "%";
 
-            // Active Menu
+            // Active Menu Logic
             let current = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                if (scrollPos >= sectionTop - 250) {
-                    current = section.getAttribute("id");
-                }
-            });
+            
+            // Ưu tiên: Nếu cuộn gần hết trang thì chắc chắn là Contact
+            if (scrollPos + windowHeight >= bodyHeight - 100) {
+                current = "contact";
+            } else {
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    // Kiểm tra vị trí phần tử (offset 250px để active sớm hơn một chút)
+                    if (scrollPos >= sectionTop - 250) {
+                        current = section.getAttribute("id");
+                    }
+                });
+            }
 
+            // Gán class active cho Nav Link tương ứng
             navLinks.forEach((link) => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === `#${current}`) {
@@ -439,7 +449,7 @@
                 }
             });
 
-            // Back To Top
+            // Back To Top Button
             if (scrollPos > 400) btt.classList.add('show');
             else btt.classList.remove('show');
         }
