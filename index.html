@@ -13,22 +13,7 @@
             background-color: #050a09; 
             color: #e6f7f6; 
             overflow-x: hidden;
-        }
-
-        /* --- TỐI ƯU CON TRỎ CHUỘT --- */
-        #cursor {
-            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9999;
-            transition: transform 0.1s ease-out, background 0.3s ease;
-            transform: translate(-50%, -50%);
-            display: none; /* Mặc định ẩn */
-        }
-
-        /* Chỉ áp dụng hiệu ứng chuột trên PC (màn hình lớn) */
-        @media (min-width: 1024px) {
-            #cursor { display: block; }
-            body { cursor: none; }
-            a, button, .skill-tag, .project-card { cursor: none; }
+            cursor: none; 
         }
 
         /* --- 1. LOADING SCREEN STYLE --- */
@@ -66,6 +51,14 @@
 
         .miku-text { color: var(--miku); }
         
+        /* CUSTOM CURSOR */
+        #cursor {
+            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            transition: transform 0.15s ease-out, background 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
         /* SCROLL PROGRESS BAR */
         #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
         #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
@@ -89,7 +82,8 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
-            position: relative; flex-shrink: 0;
+            position: relative;
+            flex-shrink: 0;
         }
         .nav-link.active {
             color: var(--miku) !important;
@@ -98,14 +92,28 @@
         }
 
         #nav-menu {
-            display: flex; overflow-x: auto; scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 2px 0;
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 2px 0;
         }
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (max-width: 768px) {
-            .nav-link { width: auto; min-width: 65px; padding: 4px 12px; font-size: 9px; letter-spacing: 0.05em; }
-            #nav-menu { gap: 6px; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+            .nav-link {
+                width: auto;
+                min-width: 65px;
+                padding: 4px 12px;
+                font-size: 9px;
+                letter-spacing: 0.05em;
+            }
+            #nav-menu {
+                gap: 6px;
+                mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+                -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            }
         }
 
         /* PROJECT GRID STYLE */
@@ -113,10 +121,15 @@
         .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
         .project-overlay {
-            position: absolute; inset: 0; 
+            position: absolute; 
+            inset: 0; 
             background: linear-gradient(0deg, rgba(5,10,9,0.85) 0%, rgba(5,10,9,0.2) 50%, transparent 100%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
-            opacity: 1; transition: background 0.4s ease;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 24px;
+            opacity: 1; 
+            transition: background 0.4s ease;
         }
         .project-card:hover .project-img { transform: scale(1.08); }
 
@@ -133,7 +146,7 @@
             padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500;
             transition: all 0.3s ease;
         }
-        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); transform: scale(1.05); }
+        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
 
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
@@ -208,7 +221,7 @@
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
         <div class="text-center mb-16 reveal active">
-            <div class="avatar-frame mb-8 mx-auto" id="avatar-container">
+            <div class="avatar-frame mb-8 mx-auto">
                 <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
@@ -296,56 +309,29 @@
         const navLinks = document.querySelectorAll(".nav-link");
         const progressBar = document.getElementById('progress-bar');
         const navMenu = document.getElementById('nav-menu');
-        const avatar = document.getElementById('avatar-container');
 
         // --- JS 2. DIGITAL CLOCK (OPTIMIZED) ---
         function updateClock() {
             const now = new Date();
             const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const clockEl = document.getElementById('digital-clock');
-            if(clockEl) clockEl.textContent = now.toLocaleTimeString('en-US', options);
+            document.getElementById('digital-clock').textContent = now.toLocaleTimeString('en-US', options);
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // --- JS 3. CURSOR & PARALLAX (CHỈ CHẠY TRÊN PC >= 1024px) ---
-        if (window.innerWidth >= 1024) {
-            document.addEventListener('mousemove', e => {
-                // Di chuyển cursor hình tròn
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
+        // --- JS 3. CURSOR ---
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-                // Hiệu ứng Parallax nhẹ cho Avatar
-                if (avatar) {
-                    const moveX = (e.clientX - window.innerWidth / 2) / 25;
-                    const moveY = (e.clientY - window.innerHeight / 2) / 25;
-                    avatar.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                }
-            });
-
-            // Hiệu ứng khi Hover vào các phần tử tương tác
-            const interactives = document.querySelectorAll('a, button, .skill-tag, .glass-card, .project-card');
-            interactives.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(3)';
-                    cursor.style.background = 'rgba(57, 197, 187, 0.15)';
-                    cursor.style.border = '1px solid var(--miku)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                    cursor.style.background = 'transparent';
-                    cursor.style.border = '2px solid var(--miku)';
-                });
-            });
-        }
-
-        // --- JS 4. SCROLL LOGIC ---
+        // --- JS 4. SCROLL LOGIC (VỚI TỰ ĐỘNG TRƯỢT MENU NGANG) ---
         function handleScroll() {
             const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
             const windowHeight = window.innerHeight;
             const bodyHeight = document.documentElement.scrollHeight;
             
             // Progress Bar
-            if(progressBar) progressBar.style.width = (scrollPos / (bodyHeight - windowHeight)) * 100 + "%";
+            progressBar.style.width = (scrollPos / (bodyHeight - windowHeight)) * 100 + "%";
 
             // Active Menu & Auto Scroll Menu
             let current = "";
@@ -360,11 +346,12 @@
                 if (link.getAttribute("href") === `#${current}`) {
                     link.classList.add("active");
                     
-                    // Auto scroll menu ngang trên Mobile
-                    if (window.innerWidth < 768 && navMenu) {
+                    // LOGIC TỰ ĐỘNG TRƯỢT THANH MENU TRÊN MOBILE
+                    if (window.innerWidth < 768) {
                         const linkLeft = link.offsetLeft;
                         const linkWidth = link.offsetWidth;
                         const menuWidth = navMenu.offsetWidth;
+                        
                         navMenu.scrollTo({
                             left: linkLeft - (menuWidth / 2) + (linkWidth / 2),
                             behavior: 'smooth'
