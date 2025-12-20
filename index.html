@@ -449,41 +449,56 @@
             });
         });
 
-        // --- JS 5. SCROLL EVENTS ---
-        function handleScroll() {
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.documentElement.scrollHeight;
-            const totalScrollable = bodyHeight - windowHeight;
-            
-            // Progress Bar
-            const scrolled = (scrollPos / totalScrollable) * 100;
-            progressBar.style.width = scrolled + "%";
+        // --- JS 5. SCROLL EVENTS (ĐÃ CẬP NHẬT TỰ ĐỘNG CUỘN MENU) ---
+function handleScroll() {
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const bodyHeight = document.documentElement.scrollHeight;
+    const totalScrollable = bodyHeight - windowHeight;
+    
+    // Progress Bar
+    const scrolled = (scrollPos / totalScrollable) * 100;
+    progressBar.style.width = scrolled + "%";
 
-            // Active Menu Logic
-            let current = "";
-            if (scrollPos + windowHeight >= bodyHeight - 100) {
-                current = "contact";
-            } else {
-                sections.forEach((section) => {
-                    const sectionTop = section.offsetTop;
-                    if (scrollPos >= sectionTop - 250) {
-                        current = section.getAttribute("id");
-                    }
+    // Active Menu Logic
+    let current = "";
+    if (scrollPos + windowHeight >= bodyHeight - 10) {
+        current = "contact";
+    } else {
+        sections.forEach((section) => {
+            const sectionTop = section.offsetTop;
+            if (scrollPos >= sectionTop - 250) {
+                current = section.getAttribute("id");
+            }
+        });
+    }
+
+    navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+            
+            // --- LOGIC TỰ ĐỘNG CUỘN MENU MOBILE ---
+            if (window.innerWidth < 768) {
+                const navMenu = document.getElementById('nav-menu');
+                // Tính toán vị trí của link đang active trong thanh menu ngang
+                const linkOffsetLeft = link.offsetLeft;
+                const linkWidth = link.offsetWidth;
+                const menuWidth = navMenu.offsetWidth;
+                
+                // Cuộn sao cho mục active nằm ở giữa hoặc bên phải thanh menu
+                navMenu.scrollTo({
+                    left: linkOffsetLeft - (menuWidth / 2) + (linkWidth / 2),
+                    behavior: 'smooth'
                 });
             }
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
-            });
-
-            // Back To Top Button
-            if (scrollPos > 400) btt.classList.add('show');
-            else btt.classList.remove('show');
         }
+    });
+
+    // Back To Top Button
+    if (scrollPos > 400) btt.classList.add('show');
+    else btt.classList.remove('show');
+}
 
         window.addEventListener("scroll", handleScroll);
         window.addEventListener("load", handleScroll);
@@ -499,3 +514,4 @@
     </script>
 </body>
 </html>
+
