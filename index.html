@@ -19,7 +19,7 @@
         #cursor {
             width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 9999;
-            transition: transform 0.1s ease-out, background 0.3s ease;
+            transition: transform 0.15s ease-out, background 0.3s ease;
             transform: translate(-50%, -50%);
             display: none; /* Mặc định ẩn */
         }
@@ -28,10 +28,15 @@
         @media (min-width: 1024px) {
             #cursor { display: block; }
             body { cursor: none; }
-            a, button, .skill-tag, .project-card { cursor: none; }
+            a, button, .skill-tag, .project-card, .nav-link { cursor: none; }
         }
 
-        /* --- 1. LOADING SCREEN STYLE --- */
+        /* Trả lại con trỏ mặc định trên Mobile */
+        @media (max-width: 1023px) {
+            body { cursor: auto !important; }
+        }
+
+        /* --- LOADING SCREEN --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050a09; z-index: 10000;
@@ -39,134 +44,73 @@
             transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.8s;
         }
         #loader.hidden { opacity: 0; visibility: hidden; }
-        
-        .loader-logo {
-            font-size: 2rem; font-weight: 900; color: var(--miku);
-            letter-spacing: -0.05em; margin-bottom: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        .loader-bar {
-            width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1);
-            position: relative; overflow: hidden;
-        }
-        .loader-bar::after {
-            content: ""; position: absolute; left: -100%; top: 0; height: 100%; width: 100%;
-            background: var(--miku); animation: loading 1.5s infinite;
-        }
+        .loader-logo { font-size: 2rem; font-weight: 900; color: var(--miku); animation: pulse 1.5s infinite; }
+        .loader-bar { width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; }
+        .loader-bar::after { content: ""; position: absolute; left: -100%; top: 0; height: 100%; width: 100%; background: var(--miku); animation: loading 1.5s infinite; }
         @keyframes loading { 0% { left: -100%; } 100% { left: 100%; } }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } }
 
-        /* --- 2. NOISE TEXTURE --- */
+        /* --- UI ELEMENTS --- */
         body::before {
-            content: "";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0.03; pointer-events: none; z-index: 9998;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png');
         }
-
         .miku-text { color: var(--miku); }
-        
-        /* SCROLL PROGRESS BAR */
-        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; }
         #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
 
-        /* GLASSMORPHISM CARD */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s ease;
         }
-        .glass-card:hover {
-            background: rgba(57, 197, 187, 0.05);
-            border-color: rgba(57, 197, 187, 0.3);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-        }
+        .glass-card:hover { transform: translateY(-8px); border-color: rgba(57, 197, 187, 0.3); background: rgba(57, 197, 187, 0.05); }
 
-        /* NAV LINK & MOBILE MENU OPTIMIZATION */
         .nav-link {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 80px; text-align: center; padding: 6px 0;
-            border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
-            position: relative; flex-shrink: 0;
+            transition: all 0.4s ease; width: 80px; text-align: center; padding: 6px 0;
+            border-radius: 9999px; border: 1px solid transparent; color: #ffffff; flex-shrink: 0;
         }
-        .nav-link.active {
-            color: var(--miku) !important;
-            border: 1px solid rgba(57, 197, 187, 0.5) !important;
-            background: rgba(57, 197, 187, 0.1);
-        }
+        .nav-link.active { color: var(--miku) !important; border: 1px solid rgba(57, 197, 187, 0.5); background: rgba(57, 197, 187, 0.1); }
 
-        #nav-menu {
-            display: flex; overflow-x: auto; scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 2px 0;
-        }
+        #nav-menu { display: flex; overflow-x: auto; scrollbar-width: none; }
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (max-width: 768px) {
-            .nav-link { width: auto; min-width: 65px; padding: 4px 12px; font-size: 9px; letter-spacing: 0.05em; }
-            #nav-menu { gap: 6px; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+            .nav-link { width: auto; min-width: 65px; padding: 4px 12px; font-size: 9px; }
+            #nav-menu { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
         }
 
-        /* PROJECT GRID STYLE */
-        .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
-        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-        .project-overlay {
-            position: absolute; inset: 0; 
-            background: linear-gradient(0deg, rgba(5,10,9,0.85) 0%, rgba(5,10,9,0.2) 50%, transparent 100%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
-            opacity: 1; transition: background 0.4s ease;
-        }
-        .project-card:hover .project-img { transform: scale(1.08); }
-
-        /* AVATAR FRAME */
         .avatar-frame {
-            width: 180px; height: 180px; border-radius: 50%;
-            border: 3px solid var(--miku); overflow: hidden; background: #111;
-            box-shadow: 0 0 25px rgba(57, 197, 187, 0.2);
-            transition: transform 0.2s ease-out;
+            width: 180px; height: 180px; border-radius: 50%; border: 3px solid var(--miku);
+            overflow: hidden; background: #111; box-shadow: 0 0 25px rgba(57, 197, 187, 0.2);
+            transition: transform 0.3s ease-out;
         }
 
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); transform: scale(1.05); }
+        .project-card { position: relative; overflow: hidden; border-radius: 16px; aspect-ratio: 16/10; }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .project-card:hover .project-img { transform: scale(1.08); }
+        .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
 
-        .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
+        .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; transition: all 0.3s ease; }
+        .skill-tag:hover { border-color: var(--miku); transform: scale(1.05); }
+
+        .timeline-container { border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
         .timeline-dot { width: 12px; height: 12px; background: var(--miku); border-radius: 50%; position: absolute; left: -7px; top: 7px; border: 2px solid #050a09; }
 
-        /* STATUS PIN ANIMATION */
-        .ping-circle { animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        .ping-circle { animation: ping 2s infinite; }
         @keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
 
-        /* REVEAL OPTIMIZED */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-            transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
-        
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
         section { scroll-margin-top: 100px; }
 
         #backToTop {
-            position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px;
-            border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku);
-            color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px);
+            position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku); color: var(--miku);
+            display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s;
         }
         #backToTop.show { opacity: 1; visibility: visible; }
-
-        .social-link { 
-            display: inline-block;
-            transition: color 0.3s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            color: #4a5d71; letter-spacing: 0.3em; 
-        }
-        .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); }
     </style>
 </head>
 <body class="scroll-smooth">
@@ -180,24 +124,20 @@
     <div id="cursor"></div>
 
     <nav class="fixed w-full z-50 py-3 px-4 md:px-10 flex justify-between items-center bg-[#050a09]/70 backdrop-blur-xl border-b border-white/5">
-        <div class="flex flex-col flex-shrink-0 mr-4">
-            <div class="text-md md:text-lg flex items-center tracking-tighter">
-                <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
-                <span class="font-light text-white opacity-90">Design</span>
+        <div class="flex flex-col">
+            <div class="text-md md:text-lg flex items-center font-black uppercase tracking-tighter">
+                <span class="miku-text mr-1">VTP</span> <span class="text-white opacity-90 font-light">Design</span>
             </div>
             <div class="flex flex-col space-y-0.5 mt-1">
                 <div class="flex items-center space-x-1.5">
-                    <div class="relative flex h-1.5 w-1.5">
-                        <span class="ping-circle absolute inline-flex h-full w-full rounded-full bg-[#39c5bb] opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#39c5bb]"></span>
-                    </div>
-                    <span class="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-gray-400">Available</span>
+                    <div class="relative flex h-1.5 w-1.5"><span class="ping-circle absolute h-full w-full rounded-full bg-[#39c5bb]"></span><span class="relative h-1.5 w-1.5 rounded-full bg-[#39c5bb]"></span></div>
+                    <span class="text-[8px] font-bold uppercase text-gray-400">Available</span>
                 </div>
-                <span id="digital-clock" class="text-[7px] md:text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
+                <span id="digital-clock" class="text-[8px] font-mono text-gray-500">00:00:00 AM</span>
             </div>
         </div>
         
-        <div id="nav-menu" class="flex flex-grow justify-end space-x-1 text-[10px] font-bold uppercase tracking-widest">
+        <div id="nav-menu" class="flex space-x-1 text-[10px] font-bold uppercase tracking-widest">
             <a href="#home" class="nav-link active">Home</a>
             <a href="#projects" class="nav-link">Work</a>
             <a href="#skills" class="nav-link">Skills</a>
@@ -208,87 +148,73 @@
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
         <div class="text-center mb-16 reveal active">
-            <div class="avatar-frame mb-8 mx-auto" id="avatar-container">
+            <div class="avatar-frame mb-8 mx-auto" id="avatar-img">
                 <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
             <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
-            <div class="text-left px-4 reveal">
-                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
-                <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
-                    "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
-                </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start">
+            <div class="px-4 reveal">
+                <h3 class="miku-text text-[14px] font-bold mb-4">VỀ BẢN THÂN</h3>
+                <p class="text-xl text-gray-300 italic border-l-2 border-miku/30 pl-6">"Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ."</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4>
-                        <p class="text-lg font-bold text-white">Đại học Văn Lang</p>
-                    </div>
+                <div class="glass-card p-6 rounded-2xl reveal">
+                    <h4 class="miku-text text-[12px] font-bold mb-4">HỌC VẤN</h4>
+                    <p class="text-lg font-bold">Đại học Văn Lang</p>
                     <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27)</p>
                 </div>
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <div>
-                        <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4>
-                        <p class="text-lg font-bold text-white">Giải Nhất Thiết kế Logo</p>
-                    </div>
+                <div class="glass-card p-6 rounded-2xl reveal">
+                    <h4 class="miku-text text-[12px] font-bold mb-4">THÀNH TỰU</h4>
+                    <p class="text-lg font-bold">Giải Nhất Logo</p>
                     <p class="text-gray-500 text-[10px] mt-2">MTTQ Việt Nam - Huyện Củ Chi</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="projects" class="py-24 px-6 max-w-6xl mx-auto border-t border-[#39c5bb]/10">
+    <section id="projects" class="py-24 px-6 max-w-6xl mx-auto border-t border-white/5">
         <div class="flex justify-between items-end mb-16 reveal">
-            <div>
-                <h3 class="text-2xl font-black miku-text uppercase tracking-tighter">PROJECT SPOTLIGHT</h3>
-                <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Selected Works 2024 - 2025</p>
-            </div>
-            <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL BEHANCE</a>
+            <div><h3 class="text-2xl font-black miku-text uppercase">PROJECT SPOTLIGHT</h3><p class="text-gray-500 text-xs mt-2 uppercase">Selected Works</p></div>
+            <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest">BEHANCE</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div class="md:col-span-7 project-card reveal">
-                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding">
-                <div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Branding</span><h4 class="text-xl font-bold uppercase">Gaoogao Branding System</h4></div>
-            </div>
-            <div class="md:col-span-5 project-card reveal"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video"><div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media</span><h4 class="text-xl font-bold uppercase">Golden Rooster Motion</h4></div></div>
+            <div class="md:col-span-7 project-card reveal"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&w=1200" class="project-img"><div class="project-overlay"><span class="text-[10px] miku-text font-bold uppercase">Branding</span><h4 class="text-xl font-bold uppercase">Gaoogao Branding</h4></div></div>
+            <div class="md:col-span-5 project-card reveal"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&w=1200" class="project-img"><div class="project-overlay"><span class="text-[10px] miku-text font-bold uppercase">Media</span><h4 class="text-xl font-bold uppercase">Motion Design</h4></div></div>
         </div>
     </section>
 
-    <section id="skills" class="py-20 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter reveal">KỸ NĂNG</h3>
+    <section id="skills" class="py-20 px-6 max-w-4xl mx-auto border-t border-white/5">
+        <h3 class="text-2xl font-black mb-8 miku-text uppercase reveal">KỸ NĂNG</h3>
         <div class="flex flex-wrap gap-3 reveal">
-            <span class="skill-tag">Photoshop</span> <span class="skill-tag">Illustrator</span> <span class="skill-tag">Figma</span> <span class="skill-tag">After Effects</span>
+            <span class="skill-tag">Photoshop</span><span class="skill-tag">Illustrator</span><span class="skill-tag">Figma</span><span class="skill-tag">After Effects</span>
         </div>
     </section>
 
-    <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">KINH NGHIỆM</h2>
+    <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-white/5">
+        <h2 class="text-2xl font-black mb-16 miku-text uppercase reveal">KINH NGHIỆM</h2>
         <div class="timeline-container">
             <div class="timeline-item reveal"><div class="timeline-dot"></div><h4 class="font-bold">Merjea Town</h4><p class="text-[10px] miku-text">2025 - Hiện tại</p></div>
             <div class="timeline-item reveal"><div class="timeline-dot"></div><h4 class="font-bold">Bắp Rang Bơ Media</h4><p class="text-[10px] miku-text">2024 - Hiện tại</p></div>
         </div>
     </section>
 
-    <button id="backToTop">↑</button>
-
-    <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
-        <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
+    <footer id="contact" class="py-32 text-center border-t border-white/5 reveal">
+        <h3 class="text-xl font-black mb-10 miku-text italic uppercase">Let's work together</h3>
         <p class="text-lg font-bold mb-12">phatvo.0401@gmail.com</p>
-        <div class="flex justify-center gap-8 text-[10px] font-bold">
-            <a href="#" class="social-link">FACEBOOK</a>
-            <a href="#" class="social-link">INSTAGRAM</a>
-            <a href="#" class="social-link">BEHANCE</a>
+        <div class="flex justify-center gap-8 text-[10px] font-bold uppercase">
+            <a href="#" class="hover:text-[#39c5bb] transition-colors">Facebook</a>
+            <a href="#" class="hover:text-[#39c5bb] transition-colors">Instagram</a>
+            <a href="#" class="hover:text-[#39c5bb] transition-colors">Behance</a>
         </div>
     </footer>
 
+    <button id="backToTop">↑</button>
+
     <script>
-        // --- JS 1. LOADING & ESSENTIALS ---
-        window.addEventListener('load', () => {
-            document.getElementById('loader').classList.add('hidden');
-        });
+        // --- 1. INITIALIZE & LOADER ---
+        window.addEventListener('load', () => document.getElementById('loader').classList.add('hidden'));
 
         const cursor = document.getElementById('cursor');
         const btt = document.getElementById('backToTop');
@@ -296,49 +222,45 @@
         const navLinks = document.querySelectorAll(".nav-link");
         const progressBar = document.getElementById('progress-bar');
         const navMenu = document.getElementById('nav-menu');
-        const avatar = document.getElementById('avatar-container');
+        const avatar = document.getElementById('avatar-img');
 
-        // --- JS 2. DIGITAL CLOCK (OPTIMIZED) ---
+        // --- 2. DIGITAL CLOCK ---
         function updateClock() {
             const now = new Date();
-            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const clockEl = document.getElementById('digital-clock');
-            if(clockEl) clockEl.textContent = now.toLocaleTimeString('en-US', options);
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            document.getElementById('digital-clock').textContent = time;
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // --- JS 3. CURSOR & PARALLAX (CHỈ CHẠY TRÊN PC >= 1024px) ---
+        // --- 3. CURSOR LOGIC (DESKTOP ONLY) ---
         if (window.innerWidth >= 1024) {
             document.addEventListener('mousemove', e => {
-                // Di chuyển cursor hình tròn
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
-
-                // Hiệu ứng Parallax nhẹ cho Avatar
-                if (avatar) {
-                    const moveX = (e.clientX - window.innerWidth / 2) / 25;
-                    const moveY = (e.clientY - window.innerHeight / 2) / 25;
+                
+                // Parallax Avatar
+                if(avatar) {
+                    const moveX = (e.clientX - window.innerWidth/2) / 30;
+                    const moveY = (e.clientY - window.innerHeight/2) / 30;
                     avatar.style.transform = `translate(${moveX}px, ${moveY}px)`;
                 }
             });
 
-            // Hiệu ứng khi Hover vào các phần tử tương tác
+            // Hover effects
             const interactives = document.querySelectorAll('a, button, .skill-tag, .glass-card, .project-card');
             interactives.forEach(el => {
                 el.addEventListener('mouseenter', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(3)';
-                    cursor.style.background = 'rgba(57, 197, 187, 0.15)';
-                    cursor.style.border = '1px solid var(--miku)';
+                    cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                    cursor.style.background = 'rgba(57, 197, 187, 0.1)';
                 });
                 el.addEventListener('mouseleave', () => {
                     cursor.style.transform = 'translate(-50%, -50%) scale(1)';
                     cursor.style.background = 'transparent';
-                    cursor.style.border = '2px solid var(--miku)';
                 });
             });
         }
 
-        // --- JS 4. SCROLL LOGIC ---
+        // --- 4. SCROLL LOGIC (SMART NAV) ---
         function handleScroll() {
             const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
             const windowHeight = window.innerHeight;
@@ -347,28 +269,31 @@
             // Progress Bar
             if(progressBar) progressBar.style.width = (scrollPos / (bodyHeight - windowHeight)) * 100 + "%";
 
-            // Active Menu & Auto Scroll Menu
+            // Determine active section
             let current = "";
-            sections.forEach((section) => {
-                if (scrollPos >= section.offsetTop - 250) {
-                    current = section.getAttribute("id");
-                }
-            });
+            // Logic đặc biệt cho chân trang (Contact)
+            if (scrollPos + windowHeight >= bodyHeight - 150) {
+                current = "contact";
+            } else {
+                sections.forEach((section) => {
+                    if (scrollPos >= section.offsetTop - 300) {
+                        current = section.getAttribute("id");
+                    }
+                });
+            }
 
+            // Update Menu
             navLinks.forEach((link) => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === `#${current}`) {
                     link.classList.add("active");
                     
                     // Auto scroll menu ngang trên Mobile
-                    if (window.innerWidth < 768 && navMenu) {
+                    if (window.innerWidth < 1024 && navMenu) {
                         const linkLeft = link.offsetLeft;
                         const linkWidth = link.offsetWidth;
                         const menuWidth = navMenu.offsetWidth;
-                        navMenu.scrollTo({
-                            left: linkLeft - (menuWidth / 2) + (linkWidth / 2),
-                            behavior: 'smooth'
-                        });
+                        navMenu.scrollTo({ left: linkLeft - (menuWidth / 2) + (linkWidth / 2), behavior: 'smooth' });
                     }
                 }
             });
@@ -380,7 +305,7 @@
         window.addEventListener("scroll", handleScroll);
         btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
 
-        // --- JS 5. REVEAL ---
+        // --- 5. REVEAL OBSERVER ---
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
         }, { threshold: 0.1 });
