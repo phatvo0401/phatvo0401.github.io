@@ -8,33 +8,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --miku: #39c5bb; }
-        body { font-family: 'Lexend', sans-serif; background-color: #050a09; color: #e6f7f6; overflow-x: hidden; }
+        body { 
+            font-family: 'Lexend', sans-serif; 
+            background-color: #050a09; 
+            color: #e6f7f6; 
+            overflow-x: hidden;
+            cursor: none; /* Ẩn con trỏ chuột mặc định để dùng custom cursor */
+        }
         .miku-text { color: var(--miku); }
         
+        /* --- CUSTOM CURSOR --- */
+        #cursor {
+            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            transition: transform 0.15s ease-out, background 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- GLASSMORPHISM CARD --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            background: rgba(57, 197, 187, 0.05);
+            border-color: rgba(57, 197, 187, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
         .nav-link {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
             position: relative;
         }
-        
-        .nav-link:hover {
-            color: var(--miku);
-            border-color: rgba(57, 197, 187, 0.3);
-            background: rgba(57, 197, 187, 0.05);
-            box-shadow: 0 0 15px rgba(57, 197, 187, 0.2);
-        }
-        
+        .nav-link:hover { color: var(--miku); background: rgba(57, 197, 187, 0.05); }
         .nav-link.active {
             color: var(--miku) !important;
             border: 1px solid rgba(57, 197, 187, 0.5) !important;
             background: rgba(57, 197, 187, 0.1);
-            box-shadow: 0 0 20px rgba(57, 197, 187, 0.2);
         }
 
         .avatar-frame {
             width: 180px; height: 180px; border-radius: 50%;
             border: 3px solid var(--miku); overflow: hidden; background: #111;
+            box-shadow: 0 0 25px rgba(57, 197, 187, 0.2);
         }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -43,11 +64,7 @@
             padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; color: #d1d5db;
             transition: all 0.3s ease;
         }
-        .skill-tag:hover {
-            border-color: var(--miku);
-            color: white;
-            background: rgba(57, 197, 187, 0.1);
-        }
+        .skill-tag:hover { border-color: var(--miku); color: white; background: rgba(57, 197, 187, 0.1); scale: 1.05; }
 
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
@@ -56,30 +73,35 @@
             position: absolute; left: -7px; top: 7px; border: 2px solid #050a09;
         }
 
-        /* --- PHẦN STYLE CHO ANIMATION --- */
+        /* --- ANIMATION REVEAL --- */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
             transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Delay cho các item xuất hiện lần lượt */
+        .reveal.active { opacity: 1; transform: translateY(0); }
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
-        
-        .social-link {
-            transition: all 0.3s ease;
-            color: #4a5d71; 
-            letter-spacing: 0.3em;
+
+        /* --- BACK TO TOP BUTTON --- */
+        #backToTop {
+            position: fixed; bottom: 30px; right: 30px; 
+            width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku);
+            color: var(--miku); z-index: 100; display: flex;
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
+        #backToTop.show { opacity: 1; visibility: visible; }
+        #backToTop:hover { background: var(--miku); color: #050a09; }
+
+        .social-link { transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); }
     </style>
 </head>
 <body class="scroll-smooth">
+    <div id="cursor"></div>
 
     <nav class="fixed w-full z-50 py-4 px-6 md:px-10 flex justify-between items-center bg-[#050a09]/40 backdrop-blur-md border-b border-white/5">
         <div class="text-lg flex items-center tracking-tighter">
@@ -95,7 +117,8 @@
     </nav>
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
-        <div class="text-center mb-16 reveal active"> <div class="avatar-frame mb-8 mx-auto">
+        <div class="text-center mb-16 reveal active">
+            <div class="avatar-frame mb-8 mx-auto hover:scale-105 transition-transform duration-500">
                 <img src="avt.JPG" alt="Võ Thành Phát" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
@@ -105,19 +128,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
             <div class="text-left px-4 reveal reveal-delay-1">
                 <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
-                <p class="text-xl text-gray-300 leading-relaxed italic">
+                <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
                     "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-2">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-2">
                     <div>
                         <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4>
                         <p class="text-lg font-bold text-white leading-tight">Đại học Văn Lang</p>
                     </div>
                     <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27) — Ngành Thiết kế Đồ họa</p>
                 </div>
-                <div class="bg-[#0a1210] p-6 rounded-2xl border border-white/5 shadow-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-3">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal reveal-delay-3">
                     <div>
                         <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4>
                         <p class="text-lg font-bold text-white leading-tight">Giải Nhất Thiết kế Logo Mặt trận Tổ quốc Việt Nam</p>
@@ -154,7 +177,6 @@
 
     <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
         <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">KINH NGHIỆM LÀM VIỆC</h2>
-        
         <div class="timeline-container">
             <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
@@ -163,7 +185,7 @@
                     <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Xây dựng hình ảnh, quay dựng video và phát triển nội dung số cho quán cafe để tăng độ nhận diện thương hiệu.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số nhằm tối ưu hóa nhận diện thương hiệu.</p>
             </div>
 
             <div class="timeline-item reveal">
@@ -173,7 +195,7 @@
                     <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cho cộng đồng Tokusatsu với phong cách đồ họa hiện đại, đột phá.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng với phong cách đồ họa hiện đại, đột phá.</p>
             </div>
 
             <div class="timeline-item reveal">
@@ -183,7 +205,7 @@
                     <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh Youtube 23.7K Subscribers.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh YouTube đạt hơn 23.7K Subscribers.</p>
             </div>
 
             <div class="timeline-item reveal">
@@ -203,75 +225,81 @@
                     <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 – Hiện tại</span>
                 </div>
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media Staff & Branding</p>
-                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì, hệ thống bộ nhận diện thương hiệu và các ấn phẩm in ấn phục vụ quảng bá cho cửa hàng.</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì và hệ thống nhận diện thương hiệu đồng bộ, phục vụ chiến dịch quảng bá tại điểm bán.</p>
             </div>
         </div>
     </section>
+
+    <button id="backToTop" title="Go to top">↑</button>
 
     <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
         <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
         <p class="text-lg font-bold mb-2">phatvo.0401@gmail.com</p>
         <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
-        
         <div class="flex justify-center gap-8 md:gap-16 mb-20 text-[10px] font-bold">
             <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
             <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
             <a href="https://www.behance.net/phatvo0401" target="_blank" class="social-link">BEHANCE</a>
         </div>
-
         <div class="text-slate-600 text-[10px] uppercase tracking-[0.5em] pt-8 border-t border-white/5">
             © 2025 VTP Design — Portfolio Website — All Rights Reserved — Created by Võ Thành Phát
         </div>
     </footer>
 
     <script>
-        // Xử lý hiệu ứng Reveal khi cuộn trang
-        const revealCallback = (entries, observer) => {
+        // 1. Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Phóng to cursor khi hover vào các phần tử tương tác
+        const interactives = document.querySelectorAll('a, button, .skill-tag, .glass-card');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                cursor.style.background = 'rgba(57, 197, 187, 0.15)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.background = 'transparent';
+            });
+        });
+
+        // 2. Back to Top Logic
+        const btt = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 400) btt.classList.add('show');
+            else btt.classList.remove('show');
+        });
+        btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+        // 3. Reveal Animation Logic
+        const revealCallback = (entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
         };
+        const revealObserver = new IntersectionObserver(revealCallback, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        const revealObserver = new IntersectionObserver(revealCallback, {
-            threshold: 0.15 // Kích hoạt khi hiện 15% phần tử
-        });
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            revealObserver.observe(el);
-        });
-
-        // Xử lý Active Menu cũ của bạn
+        // 4. Active Menu Navigation
         const sections = document.querySelectorAll("section, footer");
         const navLinks = document.querySelectorAll(".nav-link");
 
         function updateActiveMenu() {
             let current = "";
             const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.documentElement.scrollHeight;
-
-            if (scrollPos + windowHeight >= bodyHeight - 100) {
-                current = "contact";
-            } else {
-                sections.forEach((section) => {
-                    if (scrollPos >= section.offsetTop - 150) {
-                        current = section.getAttribute("id");
-                    }
-                });
-            }
-
+            sections.forEach((section) => {
+                if (scrollPos >= section.offsetTop - 150) current = section.getAttribute("id");
+            });
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
             });
         }
         window.addEventListener("scroll", updateActiveMenu);
-        window.addEventListener("load", updateActiveMenu);
     </script>
 </body>
 </html>
-
