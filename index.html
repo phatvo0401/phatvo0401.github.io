@@ -17,7 +17,7 @@
 
         /* KHẮC PHỤC CON TRỎ */
         @media (pointer: fine) {
-            body, a, button, .skill-tag, .project-card { cursor: none !important; }
+            body, a, button, .skill-tag, .project-card, .avatar-frame { cursor: none !important; }
             #cursor { display: block; }
         }
         @media (pointer: coarse) { #cursor { display: none; } }
@@ -30,51 +30,27 @@
             transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s;
         }
         #loader.hidden { transform: translateY(-100%); opacity: 0; visibility: hidden; }
-        
         .loader-content { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .loader-logo { display: flex; align-items: center; font-size: 1.125rem; letter-spacing: -0.05em; margin-bottom: 20px; }
+        .loader-bar-container { width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; border-radius: 2px; }
+        #loader-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--miku); transition: width 0.2s ease; }
+        .loader-percentage { font-family: monospace; font-size: 5rem; font-weight: 900; color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; }
 
-        .loader-logo {
-            display: flex; align-items: center;
-            font-size: 1.125rem;
-            letter-spacing: -0.05em; margin-bottom: 20px;
-        }
-
-        .loader-bar-container { 
-            width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); 
-            position: relative; overflow: hidden; border-radius: 2px;
-        }
-        #loader-progress { 
-            position: absolute; left: 0; top: 0; height: 100%; width: 0%; 
-            background: var(--miku); transition: width 0.2s ease; 
-        }
-
-        .loader-percentage { 
-            font-family: monospace; font-size: 5rem; font-weight: 900; 
-            color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; 
-        }
-
-        /* --- DECORATION & CURSOR --- */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.03; pointer-events: none; z-index: 9998;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png');
-        }
+        /* --- NAV & CURSOR --- */
         .miku-text { color: var(--miku); }
         #cursor {
             width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 9999;
-            transition: transform 0.15s ease-out, background 0.3s ease;
+            transition: transform 0.1s ease-out, background 0.3s ease;
             transform: translate(-50%, -50%);
         }
-
-        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
-        #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
 
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
             position: relative; flex-shrink: 0;
         }
+        /* Hiệu ứng di chuột cho tất cả nav-link kể cả Contact */
         .nav-link:hover { color: var(--miku) !important; }
         .nav-link.active {
             color: var(--miku) !important;
@@ -82,52 +58,32 @@
             background: rgba(57, 197, 187, 0.1);
         }
 
-        #nav-menu { display: flex; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; }
-        #nav-menu::-webkit-scrollbar { display: none; }
-
-        /* --- AVATAR FRAME (TRẢ VỀ CŨ) --- */
+        /* --- AVATAR INTERACTIVE --- */
+        .avatar-container { perspective: 1000px; margin-bottom: 2rem; }
         .avatar-frame {
             width: 180px; height: 180px; border-radius: 50%; 
-            border: 2px solid var(--miku); /* Khung line màu */
-            overflow: hidden; background: #111; margin: 0 auto 2rem;
+            border: 2px solid var(--miku);
+            overflow: hidden; background: #111;
+            transition: transform 0.1s ease-out; /* Mượt mà khi di chuyển theo chuột */
+            will-change: transform;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-card:hover { background: rgba(57, 197, 187, 0.05); border-color: rgba(57, 197, 187, 0.3); transform: translateY(-8px); }
+        /* --- REVEAL --- */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
+        /* --- UTILS --- */
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
+        #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
+        .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: all 0.3s ease; }
+        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
         .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
         .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .project-overlay {
-            position: absolute; inset: 0; 
-            background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
-        }
-
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
-
+        .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
         .timeline-dot { width: 12px; height: 12px; background: var(--miku); border-radius: 50%; position: absolute; left: -7px; top: 7px; border: 2px solid #050a09; }
-
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        section { scroll-margin-top: 100px; }
-
-        #backToTop {
-            position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px;
-            border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku);
-            color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px);
-        }
+        #backToTop { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku); color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px); }
         #backToTop.show { opacity: 1; visibility: visible; }
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
@@ -180,12 +136,15 @@
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
         <div class="text-center mb-16 reveal">
-            <div class="avatar-frame">
-                <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
+            <div class="avatar-container">
+                <div class="avatar-frame mx-auto" id="interactive-avatar">
+                    <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover pointer-events-none" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
+                </div>
             </div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
             <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
         </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
             <div class="text-left px-4 reveal">
                 <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2 uppercase">VỀ BẢN THÂN</h3>
@@ -333,7 +292,7 @@
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
             });
-            document.querySelectorAll('a, button, .skill-tag, .project-card').forEach(el => {
+            document.querySelectorAll('a, button, .skill-tag, .project-card, .avatar-frame').forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
                     cursor.style.background = 'rgba(57, 197, 187, 0.1)';
@@ -345,7 +304,28 @@
             });
         }
 
-        // JS 4. SCROLL LOGIC
+        // JS 4. AVATAR INTERACTIVE (MAGNETIC EFFECT)
+        const avatar = document.getElementById('interactive-avatar');
+        document.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const { left, top, width, height } = avatar.getBoundingClientRect();
+            const centerX = left + width / 2;
+            const centerY = top + height / 2;
+            
+            // Tính khoảng cách chuột so với tâm avatar
+            const moveX = (clientX - centerX) / 10; 
+            const moveY = (clientY - centerY) / 10;
+            
+            // Giới hạn vùng ảnh hưởng (chỉ khi chuột ở gần)
+            const dist = Math.hypot(clientX - centerX, clientY - centerY);
+            if (dist < 400) {
+                avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
+            } else {
+                avatar.style.transform = `translate3d(0, 0, 0) rotateX(0) rotateY(0)`;
+            }
+        });
+
+        // JS 5. SCROLL & NAV ACTIVE (FIXED CONTACT EFFECT)
         const sections = document.querySelectorAll("section, footer"); 
         const navLinks = document.querySelectorAll(".nav-link");
         const progressBar = document.getElementById('progress-bar');
@@ -359,12 +339,20 @@
 
             let current = "";
             sections.forEach((section) => {
-                if (scrollPos >= section.offsetTop - 150) current = section.getAttribute("id");
+                const sectionTop = section.offsetTop;
+                // Nếu cuộn gần hết trang thì ưu tiên Contact
+                if (scrollPos + windowHeight >= bodyHeight - 100) {
+                    current = "contact";
+                } else if (scrollPos >= sectionTop - 150) {
+                    current = section.getAttribute("id");
+                }
             });
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
+                if (link.getAttribute("href") === `#${current}`) {
+                    link.classList.add("active");
+                }
             });
 
             if (scrollPos > 400) btt.classList.add('show'); else btt.classList.remove('show');
@@ -372,7 +360,7 @@
 
         btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
 
-        // JS 5. REVEAL
+        // JS 6. REVEAL
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
         }, { threshold: 0.1 });
