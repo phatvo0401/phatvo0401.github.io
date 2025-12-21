@@ -50,7 +50,6 @@
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
             position: relative; flex-shrink: 0;
         }
-        /* Hiệu ứng di chuột cho tất cả nav-link kể cả Contact */
         .nav-link:hover { color: var(--miku) !important; }
         .nav-link.active {
             color: var(--miku) !important;
@@ -64,8 +63,22 @@
             width: 180px; height: 180px; border-radius: 50%; 
             border: 2px solid var(--miku);
             overflow: hidden; background: #111;
-            transition: transform 0.1s ease-out; /* Mượt mà khi di chuyển theo chuột */
+            transition: transform 0.1s ease-out;
             will-change: transform;
+        }
+
+        /* --- FIX: HIỆU ỨNG GLASS MỜ --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover { 
+            background: rgba(57, 197, 187, 0.05); 
+            border-color: rgba(57, 197, 187, 0.3); 
+            transform: translateY(-5px); 
         }
 
         /* --- REVEAL --- */
@@ -202,7 +215,6 @@
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
                 <p class="text-gray-500 text-xs leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số nhằm tối ưu hóa nhận diện thương hiệu.</p>
             </div>
-
             <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
@@ -212,7 +224,6 @@
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
                 <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng với phong cách đồ họa hiện đại, đột phá.</p>
             </div>
-
             <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
@@ -222,7 +233,6 @@
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
                 <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh YouTube đạt hơn 23.7K Subscribers.</p>
             </div>
-
             <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
@@ -232,7 +242,6 @@
                 <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
                 <p class="text-gray-500 text-xs leading-relaxed">Phát triển nội dung đa nền tảng cho TikTok (356K Followers) và YouTube (73.8K Subscribers) trong phân khúc mô hình cao cấp.</p>
             </div>
-
             <div class="timeline-item reveal">
                 <div class="timeline-dot"></div>
                 <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
@@ -253,7 +262,6 @@
             </div>
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL BEHANCE</a>
         </div>
-        
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div class="md:col-span-7 project-card reveal">
                 <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding">
@@ -267,20 +275,6 @@
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media Production</span>
                     <h4 class="text-xl font-bold uppercase">Golden Rooster Collection</h4>
-                </div>
-            </div>
-            <div class="md:col-span-5 project-card reveal">
-                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="UIUX">
-                <div class="project-overlay">
-                    <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Graphic Design</span>
-                    <h4 class="text-xl font-bold uppercase">Merjea_Somewhere-in-town</h4>
-                </div>
-            </div>
-            <div class="md:col-span-7 project-card reveal" style="transition-delay: 0.1s">
-                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Social">
-                <div class="project-overlay">
-                    <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Content Creation</span>
-                    <h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4>
                 </div>
             </div>
         </div>
@@ -363,12 +357,8 @@
             const { left, top, width, height } = avatar.getBoundingClientRect();
             const centerX = left + width / 2;
             const centerY = top + height / 2;
-            
-            // Tính khoảng cách chuột so với tâm avatar
             const moveX = (clientX - centerX) / 10; 
             const moveY = (clientY - centerY) / 10;
-            
-            // Giới hạn vùng ảnh hưởng (chỉ khi chuột ở gần)
             const dist = Math.hypot(clientX - centerX, clientY - centerY);
             if (dist < 400) {
                 avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
@@ -377,7 +367,7 @@
             }
         });
 
-        // JS 5. SCROLL & NAV ACTIVE (FIXED CONTACT EFFECT)
+        // JS 5. SCROLL & NAV ACTIVE
         const sections = document.querySelectorAll("section, footer"); 
         const navLinks = document.querySelectorAll(".nav-link");
         const progressBar = document.getElementById('progress-bar');
@@ -392,7 +382,6 @@
             let current = "";
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                // Nếu cuộn gần hết trang thì ưu tiên Contact
                 if (scrollPos + windowHeight >= bodyHeight - 100) {
                     current = "contact";
                 } else if (scrollPos >= sectionTop - 150) {
@@ -402,9 +391,7 @@
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
             });
 
             if (scrollPos > 400) btt.classList.add('show'); else btt.classList.remove('show');
@@ -420,5 +407,3 @@
     </script>
 </body>
 </html>
-
-
