@@ -45,17 +45,6 @@
             transform: translate(-50%, -50%);
         }
 
-        /* TỐI ƯU MENU MOBILE CUỘN NGANG */
-        #nav-menu {
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Ẩn scrollbar Firefox */
-            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent); /* Hiệu ứng mờ 2 đầu */
-            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-        }
-        #nav-menu::-webkit-scrollbar { display: none; } /* Ẩn scrollbar Chrome/Safari */
-
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
@@ -101,8 +90,12 @@
         #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
         .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: all 0.3s ease; }
         .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
+        
+        /* --- PROJECT CARD HOVER FIX --- */
         .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
         .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .project-card:hover .project-img { transform: scale(1.08); } 
+        
         .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
@@ -149,7 +142,7 @@
             </div>
         </div>
         
-        <div id="nav-menu" class="flex flex-grow justify-start md:justify-end space-x-1 text-[10px] font-bold uppercase tracking-widest pl-2">
+        <div id="nav-menu" class="flex flex-grow justify-end space-x-1 text-[10px] font-bold uppercase tracking-widest">
             <a href="#home" class="nav-link active">Home</a>
             <a href="#skills" class="nav-link">Skills</a>
             <a href="#career" class="nav-link">Career</a>
@@ -376,22 +369,24 @@
             });
         }
 
-        // JS 4. AVATAR INTERACTIVE (MAGNETIC EFFECT)
+        // JS 4. AVATAR INTERACTIVE (CHỈ HOẠT ĐỘNG TRÊN PC - KHÔNG CẢM ỨNG)
         const avatar = document.getElementById('interactive-avatar');
-        document.addEventListener('mousemove', (e) => {
-            const { clientX, clientY } = e;
-            const { left, top, width, height } = avatar.getBoundingClientRect();
-            const centerX = left + width / 2;
-            const centerY = top + height / 2;
-            const moveX = (clientX - centerX) / 10; 
-            const moveY = (clientY - centerY) / 10;
-            const dist = Math.hypot(clientX - centerX, clientY - centerY);
-            if (dist < 400) {
-                avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
-            } else {
-                avatar.style.transform = `translate3d(0, 0, 0) rotateX(0) rotateY(0)`;
-            }
-        });
+        if (!('ontouchstart' in window)) {
+            document.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const { left, top, width, height } = avatar.getBoundingClientRect();
+                const centerX = left + width / 2;
+                const centerY = top + height / 2;
+                const moveX = (clientX - centerX) / 10; 
+                const moveY = (clientY - centerY) / 10;
+                const dist = Math.hypot(clientX - centerX, clientY - centerY);
+                if (dist < 400) {
+                    avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
+                } else {
+                    avatar.style.transform = `translate3d(0, 0, 0) rotateX(0) rotateY(0)`;
+                }
+            });
+        }
 
         // JS 5. SCROLL & NAV ACTIVE
         const sections = document.querySelectorAll("section, footer"); 
@@ -417,20 +412,7 @@
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                    
-                    // Tự động cuộn menu ngang đến mục đang active trên mobile
-                    if (window.innerWidth < 768) {
-                        const menu = document.getElementById('nav-menu');
-                        const linkOffset = link.offsetLeft;
-                        const menuWidth = menu.offsetWidth;
-                        menu.scrollTo({
-                            left: linkOffset - (menuWidth / 2) + (link.offsetWidth / 2),
-                            behavior: 'smooth'
-                        });
-                    }
-                }
+                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
             });
 
             if (scrollPos > 400) btt.classList.add('show'); else btt.classList.remove('show');
