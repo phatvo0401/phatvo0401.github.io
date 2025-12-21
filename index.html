@@ -68,11 +68,22 @@
             mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
         }
-        @keyframes adobeFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-            50% { transform: translateY(-30px) rotate(10deg); opacity: 0.2; }
+        
+        /* Hiệu ứng trôi tự nhiên hơn */
+        @keyframes floatRandom {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(15px, -20px) rotate(5deg); }
+            66% { transform: translate(-10px, -35px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
-        .adobe-icon { position: absolute; animation: adobeFloat 8s infinite ease-in-out; filter: grayscale(100%) brightness(200%); }
+        .adobe-icon { 
+            position: absolute; 
+            animation: floatRandom 10s infinite ease-in-out; 
+            filter: grayscale(100%) brightness(150%); 
+            opacity: 0.15;
+            transition: opacity 0.5s ease;
+        }
+        .adobe-icon:hover { opacity: 0.4; }
 
         /* --- AVATAR INTERACTIVE --- */
         .avatar-container { perspective: 1000px; margin-bottom: 2rem; }
@@ -123,23 +134,29 @@
 
     <div id="hero-canvas-container">
         <canvas id="hero-canvas"></canvas>
-        <div class="adobe-icon" style="top: 20%; left: 10%; animation-duration: 7s;">
+        <div class="adobe-icon" style="top: 15%; left: 10%; animation-duration: 12s;">
             <img src="https://cdn.worldvectorlogo.com/logos/adobe-photoshop-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Ps">
         </div>
-        <div class="adobe-icon" style="top: 35%; left: 80%; animation-duration: 10s; animation-delay: -2s;">
+        <div class="adobe-icon" style="top: 25%; left: 80%; animation-duration: 15s; animation-delay: -2s;">
             <img src="https://cdn.worldvectorlogo.com/logos/adobe-illustrator-cc-3.svg" class="w-10 md:w-14 h-10 md:h-14" alt="Ai">
         </div>
-        <div class="adobe-icon" style="top: 50%; left: 15%; animation-duration: 12s; animation-delay: -5s;">
+        <div class="adobe-icon" style="top: 45%; left: 15%; animation-duration: 18s; animation-delay: -5s;">
             <img src="https://cdn.worldvectorlogo.com/logos/after-effects-1.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Ae">
         </div>
-        <div class="adobe-icon" style="top: 65%; left: 75%; animation-duration: 9s; animation-delay: -1s;">
+        <div class="adobe-icon" style="top: 60%; left: 75%; animation-duration: 14s; animation-delay: -1s;">
             <img src="https://cdn.worldvectorlogo.com/logos/premiere-pro-cc.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr">
         </div>
-        <div class="adobe-icon" style="top: 80%; left: 20%; animation-duration: 9s; animation-delay: -1s;">
-            <img src="https://cdn.worldvectorlogo.com/logos/capcut-3.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr">
+        <div class="adobe-icon" style="top: 75%; left: 20%; animation-duration: 16s; animation-delay: -3s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/capcut-3.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Cc">
         </div>
-        <div class="adobe-icon" style="top: 25%; left: 70%; animation-duration: 9s; animation-delay: -1s;">
-            <img src="https://cdn.worldvectorlogo.com/logos/blender-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr">
+        <div class="adobe-icon" style="top: 20%; left: 65%; animation-duration: 20s; animation-delay: -4s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/blender-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Bl">
+        </div>
+        <div class="adobe-icon" style="top: 55%; left: 85%; animation-duration: 13s; animation-delay: -7s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/figma-1.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Fg">
+        </div>
+        <div class="adobe-icon" style="top: 85%; left: 70%; animation-duration: 17s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/indesign-cc-1.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Id">
         </div>
     </div>
 
@@ -525,6 +542,3 @@
     </script>
 </body>
 </html>
-
-
-
