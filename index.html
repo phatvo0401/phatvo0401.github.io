@@ -15,16 +15,14 @@
             overflow-x: hidden;
         }
 
-        /* Ẩn con trỏ mặc định trên toàn bộ các thành phần khi dùng chuột */
+        /* KHẮC PHỤC CON TRỎ */
         @media (pointer: fine) {
             body, a, button, .skill-tag, .project-card { cursor: none !important; }
             #cursor { display: block; }
         }
-        @media (pointer: coarse) {
-            #cursor { display: none; }
-        }
+        @media (pointer: coarse) { #cursor { display: none; } }
 
-        /* --- 1. LOADING SCREEN --- */
+        /* --- CẬP NHẬT MÀN HÌNH LOADING (ĐỒNG BỘ LOGO) --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050a09; z-index: 10000;
@@ -32,12 +30,33 @@
             transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s;
         }
         #loader.hidden { transform: translateY(-100%); opacity: 0; visibility: hidden; }
-        .loader-logo { font-size: 1.5rem; letter-spacing: -0.05em; margin-bottom: 15px; text-transform: uppercase; }
-        .loader-bar-container { width: 180px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; }
-        #loader-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--miku); transition: width 0.2s ease; }
-        .loader-percentage { font-family: monospace; font-size: 5rem; font-weight: 900; color: rgba(57, 197, 187, 0.5); position: absolute; bottom: 5%; right: 5%; }
+        
+        .loader-content { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
 
-        /* --- 2. DECORATION --- */
+        /* Đồng bộ Logo Loading với Logo Navbar */
+        .loader-logo {
+            display: flex; align-items: center;
+            font-size: 1.125rem; /* Tương đương text-lg */
+            letter-spacing: -0.05em; margin-bottom: 20px; text-transform: uppercase;
+        }
+
+        .loader-bar-container { 
+            width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); 
+            position: relative; overflow: hidden; border-radius: 2px;
+        }
+        #loader-progress { 
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%; 
+            background: var(--miku); transition: width 0.2s ease; 
+        }
+
+        .loader-percentage { 
+            font-family: monospace; font-size: 5rem; font-weight: 900; 
+            color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; 
+        }
+
+        /* --- DECORATION --- */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0.03; pointer-events: none; z-index: 9998;
@@ -54,7 +73,6 @@
         #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
         #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
 
-        /* --- 3. COMPONENTS --- */
         .glass-card {
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -62,12 +80,10 @@
         .glass-card:hover { background: rgba(57, 197, 187, 0.05); border-color: rgba(57, 197, 187, 0.3); transform: translateY(-8px); }
 
         .nav-link {
-            transition: all 0.3s ease;
-            width: 80px; text-align: center; padding: 6px 0;
+            transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
             position: relative; flex-shrink: 0;
         }
-        /* Hiệu ứng di chuột đổi màu xanh Miku */
         .nav-link:hover { color: var(--miku) !important; }
         .nav-link.active {
             color: var(--miku) !important;
@@ -110,7 +126,6 @@
             opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px);
         }
         #backToTop.show { opacity: 1; visibility: visible; }
-
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
     </style>
@@ -120,8 +135,8 @@
     <div id="loader">
         <div class="loader-content">
             <div class="loader-logo">
-                <span class="font-black miku-text uppercase">VTP</span>
-                <span class="font-light text-white opacity-90">Design</span>
+                <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
+                <span class="font-light text-white opacity-90 uppercase">Design</span>
             </div>
             <div class="loader-bar-container">
                 <div id="loader-progress"></div>
@@ -137,7 +152,7 @@
         <div class="flex flex-col flex-shrink-0 mr-4">
             <div class="text-md md:text-lg flex items-center tracking-tighter">
                 <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
-                <span class="font-light text-white opacity-90">Design</span>
+                <span class="font-light text-white opacity-90 uppercase">Design</span>
             </div>
             <div class="flex flex-col space-y-0.5 mt-1">
                 <div class="flex items-center space-x-1.5">
@@ -264,25 +279,14 @@
         <div class="reveal">
             <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
         </div>
-        
         <div class="reveal" style="transition-delay: 0.1s">
-            <a href="mailto:phatvo.0401@gmail.com" class="text-lg font-bold mb-2 block hover:text-[#39c5bb] transition-colors">
-                phatvo.0401@gmail.com
-            </a>
+            <a href="mailto:phatvo.0401@gmail.com" class="text-lg font-bold mb-2 block hover:text-[#39c5bb] transition-colors">phatvo.0401@gmail.com</a>
             <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
         </div>
-
         <div class="flex justify-center gap-8 md:gap-16 mb-20 text-[10px] font-bold reveal" style="transition-delay: 0.2s">
             <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
             <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="social-link">BEHANCE</a>
-        </div>
-
-        <div class="pt-8 border-t border-white/5 reveal" style="transition-delay: 0.3s">
-            <p class="text-slate-600 text-[9px] uppercase tracking-[0.5em] leading-loose">
-                © 2025 VTP Design — Portfolio Website <br>
-                All Rights Reserved — Created by Võ Thành Phát
-            </p>
         </div>
     </footer>
 
@@ -349,24 +353,16 @@
             const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
             const windowHeight = window.innerHeight;
             const bodyHeight = document.documentElement.scrollHeight;
-            
             progressBar.style.width = (scrollPos / (bodyHeight - windowHeight)) * 100 + "%";
 
             let current = "";
             sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                if (scrollPos + windowHeight >= bodyHeight - 100) {
-                    current = "contact";
-                } else if (scrollPos >= sectionTop - 150) {
-                    current = section.getAttribute("id");
-                }
+                if (scrollPos >= section.offsetTop - 150) current = section.getAttribute("id");
             });
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === `#${current}`) link.classList.add("active");
             });
 
             if (scrollPos > 400) btt.classList.add('show'); else btt.classList.remove('show');
@@ -374,7 +370,7 @@
 
         btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
 
-        // JS 5. REVEAL OBSERVER
+        // JS 5. REVEAL
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
         }, { threshold: 0.1 });
