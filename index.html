@@ -61,6 +61,19 @@
             background: rgba(57, 197, 187, 0.1);
         }
 
+        /* --- HIỆU ỨNG NỀN ĐỘNG --- */
+        #hero-canvas-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+            overflow: hidden; pointer-events: none; z-index: 0;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+        @keyframes adobeFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
+            50% { transform: translateY(-30px) rotate(10deg); opacity: 0.2; }
+        }
+        .adobe-icon { position: absolute; animation: adobeFloat 8s infinite ease-in-out; filter: grayscale(100%) brightness(200%); }
+
         /* --- AVATAR INTERACTIVE --- */
         .avatar-container { perspective: 1000px; margin-bottom: 2rem; }
         .avatar-frame {
@@ -108,6 +121,22 @@
 </head>
 <body class="scroll-smooth">
 
+    <div id="hero-canvas-container">
+        <canvas id="hero-canvas"></canvas>
+        <div class="adobe-icon" style="top: 20%; left: 10%; animation-duration: 7s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/adobe-photoshop-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Ps">
+        </div>
+        <div class="adobe-icon" style="top: 35%; left: 80%; animation-duration: 10s; animation-delay: -2s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/adobe-illustrator-cc-icon.svg" class="w-10 md:w-14 h-10 md:h-14" alt="Ai">
+        </div>
+        <div class="adobe-icon" style="top: 55%; left: 15%; animation-duration: 12s; animation-delay: -5s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/adobe-after-effects-cc-icon.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Ae">
+        </div>
+        <div class="adobe-icon" style="top: 70%; left: 75%; animation-duration: 9s; animation-delay: -1s;">
+            <img src="https://cdn.worldvectorlogo.com/logos/adobe-premiere-pro-cc-icon.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr">
+        </div>
+    </div>
+
     <div id="loader">
         <div class="loader-content">
             <div class="loader-logo">
@@ -151,7 +180,7 @@
         </div>
     </nav>
 
-    <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12 relative z-10">
         <div class="text-center mb-16 reveal">
             <div class="avatar-container">
                 <div class="avatar-frame mx-auto" id="interactive-avatar">
@@ -319,6 +348,52 @@
     <button id="backToTop">↑</button>
 
     <script>
+        // JS 0. NỀN DYNAMC (RAINING LINES)
+        const heroCanvas = document.getElementById('hero-canvas');
+        const hctx = heroCanvas.getContext('2d');
+        let hW, hH;
+
+        function resizeHero() {
+            hW = heroCanvas.width = window.innerWidth;
+            hH = heroCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeHero);
+        resizeHero();
+
+        class MikuLine {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * hW;
+                this.y = Math.random() * -hH;
+                this.speed = Math.random() * 3 + 2;
+                this.len = Math.random() * 80 + 40;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.y += this.speed;
+                if (this.y > hH) this.init();
+            }
+            draw() {
+                hctx.beginPath();
+                let g = hctx.createLinearGradient(0, this.y, 0, this.y + this.len);
+                g.addColorStop(0, 'transparent');
+                g.addColorStop(1, `rgba(57, 197, 187, ${this.opacity})`);
+                hctx.strokeStyle = g;
+                hctx.lineWidth = 1;
+                hctx.moveTo(this.x, this.y);
+                hctx.lineTo(this.x, this.y + this.len);
+                hctx.stroke();
+            }
+        }
+
+        const lines = Array.from({length: 50}, () => new MikuLine());
+        function animateHero() {
+            hctx.clearRect(0,0,hW,hH);
+            lines.forEach(l => { l.update(); l.draw(); });
+            requestAnimationFrame(animateHero);
+        }
+        animateHero();
+
         // JS 1. LOADING LOGIC
         window.addEventListener('load', () => {
             const progress = document.getElementById('loader-progress');
@@ -388,7 +463,7 @@
             });
         }
 
-        // JS 5. SCROLL & NAV ACTIVE (ĐÃ FIX LỖI CUỘN HOME TRÊN MOBILE)
+        // JS 5. SCROLL & NAV ACTIVE
         const sections = document.querySelectorAll("section, footer"); 
         const navLinks = document.querySelectorAll(".nav-link");
         const navMenu = document.getElementById('nav-menu');
@@ -416,13 +491,10 @@
                 if (link.getAttribute("href") === `#${current}`) {
                     link.classList.add("active");
                     
-                    // FIX: TỰ ĐỘNG CUỘN THANH MENU THÔNG MINH
                     if (window.innerWidth < 768) {
                         if (current === "home") {
-                            // Nếu là Home thì luôn về sát lề trái
                             navMenu.scrollTo({ left: 0, behavior: 'smooth' });
                         } else {
-                            // Các mục khác tính toán để nằm giữa thanh menu
                             const menuWidth = navMenu.offsetWidth;
                             const linkLeft = link.offsetLeft;
                             const linkWidth = link.offsetWidth;
