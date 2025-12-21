@@ -22,7 +22,7 @@
         }
         @media (pointer: coarse) { #cursor { display: none; } }
 
-        /* --- CẬP NHẬT MÀN HÌNH LOADING (ĐỒNG BỘ LOGO) --- */
+        /* --- MÀN HÌNH LOADING --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050a09; z-index: 10000;
@@ -31,15 +31,12 @@
         }
         #loader.hidden { transform: translateY(-100%); opacity: 0; visibility: hidden; }
         
-        .loader-content { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
+        .loader-content { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Đồng bộ Logo Loading với Logo Navbar */
         .loader-logo {
             display: flex; align-items: center;
-            font-size: 1.125rem; /* Tương đương text-lg */
-            letter-spacing: -0.05em; margin-bottom: 20px; text-transform: uppercase;
+            font-size: 1.125rem;
+            letter-spacing: -0.05em; margin-bottom: 20px;
         }
 
         .loader-bar-container { 
@@ -56,7 +53,7 @@
             color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; 
         }
 
-        /* --- DECORATION --- */
+        /* --- DECORATION & CURSOR --- */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0.03; pointer-events: none; z-index: 9998;
@@ -73,12 +70,6 @@
         #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
         #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-card:hover { background: rgba(57, 197, 187, 0.05); border-color: rgba(57, 197, 187, 0.3); transform: translateY(-8px); }
-
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
@@ -94,6 +85,19 @@
         #nav-menu { display: flex; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; }
         #nav-menu::-webkit-scrollbar { display: none; }
 
+        /* --- AVATAR FRAME (TRẢ VỀ CŨ) --- */
+        .avatar-frame {
+            width: 180px; height: 180px; border-radius: 50%; 
+            border: 2px solid var(--miku); /* Khung line màu */
+            overflow: hidden; background: #111; margin: 0 auto 2rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover { background: rgba(57, 197, 187, 0.05); border-color: rgba(57, 197, 187, 0.3); transform: translateY(-8px); }
+
         .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
         .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .project-overlay {
@@ -101,7 +105,6 @@
             background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%);
             display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
         }
-        .project-card:hover .project-img { transform: scale(1.08); }
 
         .skill-tag {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -136,7 +139,7 @@
         <div class="loader-content">
             <div class="loader-logo">
                 <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
-                <span class="font-light text-white opacity-90 uppercase">Design</span>
+                <span class="font-light text-white opacity-90">Design</span>
             </div>
             <div class="loader-bar-container">
                 <div id="loader-progress"></div>
@@ -152,7 +155,7 @@
         <div class="flex flex-col flex-shrink-0 mr-4">
             <div class="text-md md:text-lg flex items-center tracking-tighter">
                 <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
-                <span class="font-light text-white opacity-90 uppercase">Design</span>
+                <span class="font-light text-white opacity-90">Design</span>
             </div>
             <div class="flex flex-col space-y-0.5 mt-1">
                 <div class="flex items-center space-x-1.5">
@@ -177,7 +180,7 @@
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12">
         <div class="text-center mb-16 reveal">
-            <div class="w-[180px] h-[180px] rounded-full border-3 border-[#39c5bb] overflow-hidden bg-[#111] shadow-[0_0_25px_rgba(57,197,187,0.2)] mb-8 mx-auto">
+            <div class="avatar-frame">
                 <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
             </div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
@@ -185,19 +188,19 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
             <div class="text-left px-4 reveal">
-                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
+                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2 uppercase">VỀ BẢN THÂN</h3>
                 <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
                     "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4>
+                    <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4 uppercase">HỌC VẤN</h4>
                     <p class="text-lg font-bold text-white">Đại học Văn Lang</p>
                     <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27)</p>
                 </div>
                 <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
-                    <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4>
+                    <h4 class="miku-text text-[12px] font-bold tracking-widest mb-4 uppercase">THÀNH TỰU</h4>
                     <p class="text-lg font-bold text-white">Giải Nhất Thiết kế Logo</p>
                     <p class="text-gray-500 text-[10px] mt-2">MTTQ Việt Nam - Huyện Củ Chi</p>
                 </div>
@@ -256,17 +259,16 @@
             </div>
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL BEHANCE</a>
         </div>
-        
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div class="md:col-span-7 project-card reveal">
-                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding">
+                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Branding</span>
                     <h4 class="text-xl font-bold uppercase">Gaoogao Branding System</h4>
                 </div>
             </div>
             <div class="md:col-span-5 project-card reveal" style="transition-delay: 0.1s">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media Production</span>
                     <h4 class="text-xl font-bold uppercase">Golden Rooster Motion</h4>
