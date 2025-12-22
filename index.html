@@ -10,8 +10,9 @@
         :root { --miku: #39c5bb; }
         body { 
             font-family: 'Lexend', sans-serif; 
-            background-color: #050a09; 
-            color: #e6f7f6; 
+            /* CẢI THIỆN 1: Soft Dark Mode - Giảm chóng mặt do tương phản gắt */
+            background-color: #0d1110; 
+            color: #cbd5e1; 
             overflow-x: hidden;
         }
 
@@ -45,8 +46,10 @@
         #cursor {
             width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 9999;
-            transition: transform 0.1s ease-out, background 0.3s ease;
+            /* CẢI THIỆN 2: Giảm delay con trỏ để tránh say tàu xe kỹ thuật số */
+            transition: transform 0.05s linear, background 0.3s ease;
             transform: translate(-50%, -50%);
+            will-change: transform;
         }
 
         .nav-link {
@@ -108,7 +111,8 @@
             transform: translateY(-5px); 
         }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* CẢI THIỆN 3: Giảm biên độ nhảy của reveal để đỡ mỏi mắt khi cuộn nhanh */
+        .reveal { opacity: 0; transform: translateY(15px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
         #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
@@ -116,9 +120,10 @@
         .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: all 0.3s ease; }
         .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
         
-        .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
-        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .project-card:hover .project-img { transform: scale(1.08); } 
+        /* CẢI THIỆN 4: Tối ưu hóa Project Card */
+        .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; will-change: transform; }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); backface-visibility: hidden; }
+        .project-card:hover .project-img { transform: scale(1.05); } 
         
         .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
@@ -218,7 +223,7 @@
             <div class="text-left px-4 reveal">
                 <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
                 <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
-                    "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
+                    "Mình là một nhà thiết kế luôn tìm kiếm sự giao thoa giữa giá trị hoài cổ và ngôn ngữ đồ họa hiện đại. Việc sưu tầm <span class="miku-text">máy Cassette cũ</span> và <span class="miku-text">nắp khoen chai</span> không chỉ là sở thích, mà còn là cách mình rèn luyện sự kiên nhẫn và tính tỉ mỉ trong từng điểm ảnh."
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,28 +326,28 @@
         
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div class="md:col-span-7 project-card reveal">
-                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding">
+                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding" loading="lazy" decoding="async">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Graphic Designer & Branding</span>
                     <h4 class="text-xl font-bold uppercase">Gaoogao.com Shop</h4>
                 </div>
             </div>
             <div class="md:col-span-5 project-card reveal" style="transition-delay: 0.1s">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video" loading="lazy" decoding="async">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media Production</span>
                     <h4 class="text-xl font-bold uppercase">Golden Rooster Collection</h4>
                 </div>
             </div>
             <div class="md:col-span-5 project-card reveal">
-                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="UIUX">
+                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="UIUX" loading="lazy" decoding="async">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media & Content Creator</span>
                     <h4 class="text-xl font-bold uppercase">Merjea_Somewhere-in-town</h4>
                 </div>
             </div>
             <div class="md:col-span-7 project-card reveal" style="transition-delay: 0.1s">
-                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Social">
+                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Social" loading="lazy" decoding="async">
                 <div class="project-overlay">
                     <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Video Editor & Media Manager</span>
                     <h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4>
@@ -371,7 +376,7 @@
     <button id="backToTop">↑</button>
 
     <script>
-        // JS 0. NỀN DYNAMC (RAINING LINES)
+        // JS 0. NỀN DYNAMIC (RAINING LINES)
         const heroCanvas = document.getElementById('hero-canvas');
         const hctx = heroCanvas.getContext('2d');
         let hW, hH;
@@ -388,9 +393,10 @@
             init() {
                 this.x = Math.random() * hW;
                 this.y = Math.random() * -hH;
-                this.speed = Math.random() * 3 + 2;
-                this.len = Math.random() * 80 + 40;
-                this.opacity = Math.random() * 0.4 + 0.1;
+                /* CẢI THIỆN 7: Giảm tốc độ rơi để dịu mắt hơn */
+                this.speed = Math.random() * 1.5 + 1; 
+                this.len = Math.random() * 60 + 30;
+                this.opacity = Math.random() * 0.2 + 0.05;
             }
             update() {
                 this.y += this.speed;
@@ -409,7 +415,8 @@
             }
         }
 
-        const lines = Array.from({length: 50}, () => new MikuLine());
+        /* CẢI THIỆN 8: Giảm số lượng đường kẻ (từ 50 xuống 25) để giảm gánh nặng thị giác */
+        const lines = Array.from({length: 25}, () => new MikuLine());
         function animateHero() {
             hctx.clearRect(0,0,hW,hH);
             lines.forEach(l => { l.update(); l.draw(); });
@@ -475,8 +482,8 @@
                 const { left, top, width, height } = avatar.getBoundingClientRect();
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
-                const moveX = (clientX - centerX) / 10; 
-                const moveY = (clientY - centerY) / 10;
+                const moveX = (clientX - centerX) / 15; 
+                const moveY = (clientY - centerY) / 15;
                 const dist = Math.hypot(clientX - centerX, clientY - centerY);
                 if (dist < 400) {
                     avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
@@ -537,16 +544,8 @@
         // JS 6. REVEAL
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.05 }); /* CẢI THIỆN 9: Giảm threshold để hiện mượt hơn */
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
