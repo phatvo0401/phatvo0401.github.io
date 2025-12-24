@@ -26,7 +26,6 @@
             position: relative;
         }
 
-        /* Tối ưu hóa thanh menu cuộn trên Mobile */
         #nav-menu { 
             -ms-overflow-style: none; 
             scrollbar-width: none; 
@@ -34,7 +33,7 @@
             display: flex;
             overflow-x: auto;
             white-space: nowrap;
-            -webkit-overflow-scrolling: touch; /* Giúp cuộn mượt trên iOS */
+            -webkit-overflow-scrolling: touch;
         }
         #nav-menu::-webkit-scrollbar { display: none; }
 
@@ -414,6 +413,10 @@
         initThree();
 
         // 3. UI SCRIPTS
+        // Fix: Ngăn trình duyệt tự cuộn xuống khi tải lại trang
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
         const loader = document.getElementById('loader');
@@ -451,18 +454,19 @@
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
         reveals.forEach(r => observer.observe(r));
 
-        // Cập nhật Logic Menu: Đồng bộ Scroll và Tự động trượt menu sang ngang
+        // Sync Menu & Scroll: Thêm biến kiểm soát initialLoad để tránh nhảy trang
+        let isInitialLoad = true;
         window.addEventListener('scroll', () => {
             const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
             if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
             
-            let current = "";
+            let current = "home";
             const sections = document.querySelectorAll('section, footer');
             sections.forEach(s => {
                 const sectionTop = s.offsetTop;
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
                     current = "contact";
                 } else if (winScroll >= (sectionTop - 300)) {
                     current = s.getAttribute('id');
@@ -470,13 +474,17 @@
             });
 
             document.querySelectorAll('.nav-link').forEach(l => {
+                const wasActive = l.classList.contains('active');
                 l.classList.remove('active');
                 if (l.getAttribute('href') === `#${current}`) {
                     l.classList.add('active');
-                    // Tự động cuộn thanh menu sang ngang để mục active nằm giữa
-                    l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    // Chỉ thực hiện trượt menu ngang nếu không phải lúc vừa load trang
+                    if (!isInitialLoad && !wasActive) {
+                        l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
                 }
             });
+            isInitialLoad = false;
         });
 
         document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
