@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Võ Thành Phát | Portfolio 2025</title>
     <script>
+        // Cưỡng ép trình duyệt không lưu vị trí cuộn cũ
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
         window.scrollTo(0, 0);
     </script>
@@ -378,136 +379,136 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // 1. DYNAMIC BACKGROUND
-        const heroCanvas = document.getElementById('hero-canvas');
-        const hctx = heroCanvas.getContext('2d');
-        let hW, hH;
-        function resizeHero() { hW = heroCanvas.width = window.innerWidth; hH = heroCanvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeHero);
-        resizeHero();
-        class MikuLine {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * hW; this.y = Math.random() * -hH; this.speed = Math.random() * 3 + 2; this.len = Math.random() * 80 + 40; this.opacity = Math.random() * 0.4 + 0.1; }
-            update() { this.y += this.speed; if (this.y > hH) this.init(); }
-            draw() { hctx.beginPath(); let g = hctx.createLinearGradient(0, this.y, 0, this.y + this.len); g.addColorStop(0, 'transparent'); g.addColorStop(1, `rgba(57, 197, 187, ${this.opacity})`); hctx.strokeStyle = g; hctx.lineWidth = 1; hctx.moveTo(this.x, this.y); hctx.lineTo(this.x, this.y + this.len); hctx.stroke(); }
+// --- 1. DYNAMIC BACKGROUND (Giữ nguyên) ---
+const heroCanvas = document.getElementById('hero-canvas');
+const hctx = heroCanvas.getContext('2d');
+let hW, hH;
+function resizeHero() { hW = heroCanvas.width = window.innerWidth; hH = heroCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeHero);
+resizeHero();
+class MikuLine {
+    constructor() { this.init(); }
+    init() { this.x = Math.random() * hW; this.y = Math.random() * -hH; this.speed = Math.random() * 3 + 2; this.len = Math.random() * 80 + 40; this.opacity = Math.random() * 0.4 + 0.1; }
+    update() { this.y += this.speed; if (this.y > hH) this.init(); }
+    draw() { hctx.beginPath(); let g = hctx.createLinearGradient(0, this.y, 0, this.y + this.len); g.addColorStop(0, 'transparent'); g.addColorStop(1, `rgba(57, 197, 187, ${this.opacity})`); hctx.strokeStyle = g; hctx.lineWidth = 1; hctx.moveTo(this.x, this.y); hctx.lineTo(this.x, this.y + this.len); hctx.stroke(); }
+}
+const lines = Array.from({length: 50}, () => new MikuLine());
+function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
+animateHero();
+
+// --- 2. MULTI-MODEL MANAGER (Phần mới cho 4 ô) ---
+
+function createViewer(containerId, modelPath, isAutoRotate = true) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 120;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const light = new THREE.DirectionalLight(0x39c5bb, 2);
+    light.position.set(20, 40, 20);
+    scene.add(light);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.autoRotate = isAutoRotate;
+    controls.autoRotateSpeed = 2.0;
+    controls.enableZoom = (containerId === 'three-container'); // Chỉ cho zoom ở ô chính
+
+    const loader = new STLLoader();
+    loader.load(modelPath, (geometry) => {
+        geometry.center();
+        const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI / 2;
+
+        // Tự động scale model cho vừa khung hình
+        geometry.computeBoundingBox();
+        const bSize = new THREE.Vector3();
+        geometry.boundingBox.getSize(bSize);
+        const maxDim = Math.max(bSize.x, bSize.y, bSize.z);
+        const scale = (containerId === 'three-container' ? 70 : 40) / maxDim;
+        mesh.scale.set(scale, scale, scale);
+
+        scene.add(mesh);
+        
+        // Cập nhật số Poly cho ô chính
+        if(containerId === 'three-container') {
+            document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
         }
-        const lines = Array.from({length: 50}, () => new MikuLine());
-        function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
-        animateHero();
+    });
 
-        // 2. MULTI-MODEL VIEWER FUNCTION
-        function createViewer(containerId, modelPath, isMain = false) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
 
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 140);
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+}
 
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
+// Khởi tạo 4 ô với cùng 1 file 'model.stl'
+// Sau này bạn chỉ cần đổi 'model.stl' thành 'box1.stl', 'box2.stl'...
+createViewer('three-container', 'model.stl', true);  // Ô chính
+createViewer('sub-three-1', 'model.stl', true);     // Ô nhỏ 1
+createViewer('sub-three-2', 'model.stl', true);     // Ô nhỏ 2
+createViewer('sub-three-3', 'model.stl', true);     // Ô nhỏ 3
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const light = new THREE.DirectionalLight(0x39c5bb, 2);
-            light.position.set(20, 40, 20);
-            scene.add(light);
-
-            if (isMain) {
-                const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
-                polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
-                scene.add(polarGrid);
-            }
-
-            const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 2.5;
-            controls.enableZoom = isMain;
-            if (isMain) {
-                controls.minDistance = 60; controls.maxDistance = 220;
-                controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
-            }
-
-            const loader = new STLLoader();
-            loader.load(modelPath, (geometry) => {
-                geometry.center();
-                const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.rotation.x = -Math.PI / 2;
-                
-                geometry.computeBoundingBox();
-                const bSize = new THREE.Vector3();
-                geometry.boundingBox.getSize(bSize);
-                const scale = (isMain ? 75 : 50) / Math.max(bSize.x, bSize.y, bSize.z);
-                mesh.scale.set(scale, scale, scale);
-                if (isMain) mesh.position.y = -10;
-
-                scene.add(mesh);
-                if (isMain) {
-                    document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
-                }
-            });
-
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
-            animate();
+// --- 3. UI LOGIC (Loader, Clock, Reveal) ---
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    const lProg = document.getElementById('loader-progress');
+    const lNum = document.getElementById('loader-num');
+    let p = 0;
+    const interval = setInterval(() => {
+        p += Math.floor(Math.random() * 5) + 2;
+        if (p >= 100) {
+            p = 100;
+            clearInterval(interval);
+            setTimeout(() => loader.classList.add('hidden'), 500);
         }
+        lProg.style.width = p + '%';
+        lNum.innerText = p.toString().padStart(2, '0');
+    }, 50);
+});
 
-        // KHỞI TẠO 4 Ô (Hiện tại dùng chung 'model.stl')
-        createViewer('three-container', 'model.stl', true);
-        createViewer('sub-three-1', 'model.stl', false);
-        createViewer('sub-three-2', 'model.stl', false);
-        createViewer('sub-three-3', 'model.stl', false);
+setInterval(() => {
+    document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}, 1000);
 
-        // 3. UI LOGIC & OTHER UTILS
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('loader');
-            const lProg = document.getElementById('loader-progress');
-            const lNum = document.getElementById('loader-num');
-            let p = 0;
-            const interval = setInterval(() => {
-                p += Math.floor(Math.random() * 5) + 2;
-                if (p >= 100) { p = 100; clearInterval(interval); setTimeout(() => loader.classList.add('hidden'), 500); }
-                lProg.style.width = p + '%';
-                lNum.innerText = p.toString().padStart(2, '0');
-            }, 50);
-        });
+const observer = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
 
-        setInterval(() => {
-            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }, 1000);
+// Back to top & Cursor
+const btt = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    btt.classList.toggle('show', window.scrollY > 500);
+    document.getElementById('progress-bar').style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
+});
+btt.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
 
-        const observer = new IntersectionObserver((es) => {
-            es.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
-
-        const btt = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            btt.classList.toggle('show', window.scrollY > 500);
-            document.getElementById('progress-bar').style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
-        });
-        btt.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
-
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+});
     </script>
 </body>
 </html>
