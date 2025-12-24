@@ -371,7 +371,7 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. STABLE 3D ENGINE - FIXED 30 DEGREE ANGLE & GRID FLOOR
+        // 2. STABLE 3D ENGINE - FIXED 30 DEGREE ANGLE, CIRCULAR GRID & SMOOTH ZOOM
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
@@ -391,24 +391,27 @@
             mainLight.position.set(20, 40, 20);
             scene.add(mainLight);
 
-            // THÊM MẶT PHẲNG GRID (LƯỚI)
-            const gridHelper = new THREE.GridHelper(200, 20, 0x39c5bb, 0x1a2e2c);
-            gridHelper.position.y = -35; // Nằm dưới model
-            gridHelper.material.opacity = 0.2;
-            gridHelper.material.transparent = true;
-            scene.add(gridHelper);
+            // THÊM MẶT PHẲNG GRID HÌNH TRÒN (POLAR GRID)
+            const radius = 100;
+            const sectors = 16;
+            const rings = 8;
+            const polarGrid = new THREE.PolarGridHelper(radius, sectors, rings, 64, 0x39c5bb, 0x1a2e2c);
+            polarGrid.position.y = -35; // Nằm dưới model
+            polarGrid.material.opacity = 0.2;
+            polarGrid.material.transparent = true;
+            scene.add(polarGrid);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05; // Tạo độ mượt khi xoay/zoom
+            controls.dampingFactor = 0.05; // Smooth Damping cho cả xoay và zoom
             
             controls.autoRotate = true;
             controls.autoRotateSpeed = 2.5;
             
             // GIỚI HẠN THU PHÓNG (ZOOM CONSTRAINTS)
             controls.enableZoom = true;
-            controls.minDistance = 60;   // Không cho zoom quá gần
-            controls.maxDistance = 220;  // Không cho zoom quá xa
+            controls.minDistance = 60;   
+            controls.maxDistance = 220;  
             
             // KHÓA TRỤC GÓC Ở 30 ĐỘ (POLAR ANGLE)
             const angle30Deg = Math.PI / 3;
