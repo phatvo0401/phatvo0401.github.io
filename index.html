@@ -26,15 +26,7 @@
             position: relative;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.02;
-            pointer-events: none;
-            z-index: 1;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
+        /* ĐÃ LOẠI BỎ LỚP NOISE TẠI ĐÂY ĐỂ NỀN SẠCH HƠN */
 
         #nav-menu::-webkit-scrollbar { display: none; }
         #nav-menu { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
@@ -69,7 +61,7 @@
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
-            position: relative; flex-shrink: 0;
+            position: relative; flex-shrink: 0; display: inline-block;
         }
         .nav-link:hover { color: var(--miku) !important; }
         .nav-link.active {
@@ -103,7 +95,7 @@
             width: 180px; height: 180px; border-radius: 50%; 
             border: 2px solid var(--miku);
             overflow: hidden; background: #111;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.2s ease-out;
             will-change: transform;
         }
 
@@ -158,7 +150,7 @@
         .viewport-box {
             position: relative; border-radius: 20px; border: 1px solid var(--border);
             background: #050a09; overflow: hidden; min-height: 400px;
-            touch-action: none; /* Khóa cuộn trang khi tương tác với 3D */
+            touch-action: none;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -343,12 +335,7 @@
             <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="social-link">BEHANCE</a>
         </div>
-        <div class="pt-8 border-t border-white/5">
-            <p class="text-slate-600 text-[9px] uppercase tracking-[0.5em] leading-loose">
-                © 2025 VTP Design — Portfolio Website <br>
-                All Rights Reserved — Created by Võ Thành Phát
-            </p>
-        </div>
+        <div class="pt-8 border-t border-white/5"><p class="text-slate-600 text-[9px] uppercase tracking-[0.5em] leading-loose">© 2025 VTP Design — Portfolio Website <br>All Rights Reserved — Created by Võ Thành Phát</p></div>
     </footer>
 
     <button id="backToTop">↑</button>
@@ -397,7 +384,6 @@
             mainLight.position.set(20, 40, 20);
             scene.add(mainLight);
 
-            // MẶT PHẲNG GRID HÌNH TRÒN (POLAR GRID)
             const radius = 100;
             const sectors = 16;
             const rings = 8;
@@ -410,19 +396,12 @@
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            
-            // CẬP NHẬT QUAN TRỌNG CHO MOBILE: Khóa Pan (di chuyển tâm)
             controls.enablePan = false; 
-            
             controls.autoRotate = true;
             controls.autoRotateSpeed = 2.5;
-            
-            // GIỚI HẠN THU PHÓNG (ZOOM CONSTRAINTS)
             controls.enableZoom = true;
             controls.minDistance = 60;   
             controls.maxDistance = 220;  
-            
-            // KHÓA TRỤC GÓC Ở 30 ĐỘ (POLAR ANGLE)
             const angle30Deg = Math.PI / 3;
             controls.minPolarAngle = angle30Deg;
             controls.maxPolarAngle = angle30Deg;
@@ -479,7 +458,27 @@
         setInterval(updateClock, 1000); updateClock();
 
         const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+        document.addEventListener('mousemove', (e) => { 
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
+
+        // KÍCH HOẠT LẠI HIỆU ỨNG TƯƠNG TÁC CHUỘT CHO AVATAR
+        const avatarFrame = document.getElementById('interactive-avatar');
+        if (avatarFrame) {
+            document.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const { left, top, width, height } = avatarFrame.getBoundingClientRect();
+                const centerX = left + width / 2;
+                const centerY = top + height / 2;
+                const moveX = (clientX - centerX) / 15;
+                const moveY = (clientY - centerY) / 15;
+                avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
+            });
+            avatarFrame.addEventListener('mouseleave', () => {
+                avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            });
+        }
 
         const reveals = document.querySelectorAll('.reveal');
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
@@ -491,18 +490,20 @@
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             progressBar.style.width = (winScroll / height) * 100 + "%";
             if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
+            
+            // Logic Active Menu link khi scroll
+            let current = "";
+            const sections = document.querySelectorAll('section');
+            sections.forEach(s => { if (winScroll >= (s.offsetTop - 200)) current = s.getAttribute('id'); });
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(l => { 
+                l.classList.remove('active'); 
+                if (l.getAttribute('href') === `#${current}`) l.classList.add('active'); 
+            });
         });
 
         document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('section');
-        window.addEventListener('scroll', () => {
-            let current = "";
-            sections.forEach(s => { if (pageYOffset >= (s.offsetTop - 200)) current = s.getAttribute('id'); });
-            navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === `#${current}`) l.classList.add('active'); });
-        });
     </script>
 </body>
 </html>
-
