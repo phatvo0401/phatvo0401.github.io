@@ -398,124 +398,116 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. MAIN 3D MODEL
-        let scene, camera, renderer, controls, mesh;
-        const container = document.getElementById('three-container');
+        // 2. MULTI-MODEL VIEWER FUNCTION
+        function createViewer(containerId, modelPath, isMain = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
 
-        function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 140); 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 140);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
+
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
-            mainLight.position.set(20, 40, 20);
-            scene.add(mainLight);
-            const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
-            polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
-            scene.add(polarGrid);
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.dampingFactor = 0.05; controls.enablePan = false; 
-            controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
-            controls.enableZoom = true; controls.minDistance = 60; controls.maxDistance = 220;  
-            controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
+            const light = new THREE.DirectionalLight(0x39c5bb, 2);
+            light.position.set(20, 40, 20);
+            scene.add(light);
+
+            if (isMain) {
+                const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
+                polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
+                scene.add(polarGrid);
+            }
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 2.5;
+            controls.enableZoom = isMain;
+            if (isMain) {
+                controls.minDistance = 60; controls.maxDistance = 220;
+                controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
+            }
+
             const loader = new STLLoader();
-            loader.load('model.stl', function (geometry) {
-                geometry.center(); 
-                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 }));
+            loader.load(modelPath, (geometry) => {
+                geometry.center();
+                const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
+                const mesh = new THREE.Mesh(geometry, material);
                 mesh.rotation.x = -Math.PI / 2;
+                
                 geometry.computeBoundingBox();
-                const bSize = new THREE.Vector3(); 
+                const bSize = new THREE.Vector3();
                 geometry.boundingBox.getSize(bSize);
-                const scale = 75 / Math.max(bSize.x, bSize.y, bSize.z); 
-                mesh.scale.set(scale, scale, scale); 
-                mesh.position.y = -10;
+                const scale = (isMain ? 75 : 50) / Math.max(bSize.x, bSize.y, bSize.z);
+                mesh.scale.set(scale, scale, scale);
+                if (isMain) mesh.position.y = -10;
+
                 scene.add(mesh);
-                document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
+                if (isMain) {
+                    document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
+                }
             });
-            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
-            function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
             animate();
         }
-        initThree();
 
-        // 3. UI LOGIC (RESTORED FUNCTIONS)
-        const loaderProgress = document.getElementById('loader-progress');
-        const loaderNum = document.getElementById('loader-num');
-        const loader = document.getElementById('loader');
-        let progress = 0;
-        const loadInt = setInterval(() => {
-            progress += Math.floor(Math.random() * 15) + 5;
-            if (progress >= 100) { 
-                progress = 100; clearInterval(loadInt); 
-                setTimeout(() => { loader.classList.add('hidden'); window.scrollTo(0, 0); }, 500); 
-            }
-            loaderProgress.style.width = progress + '%';
-            loaderNum.innerText = progress.toString().padStart(2, '0');
-        }, 120);
+        // KHỞI TẠO 4 Ô (Hiện tại dùng chung 'model.stl')
+        createViewer('three-container', 'model.stl', true);
+        createViewer('sub-three-1', 'model.stl', false);
+        createViewer('sub-three-2', 'model.stl', false);
+        createViewer('sub-three-3', 'model.stl', false);
 
-        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
-        setInterval(updateClock, 1000); updateClock();
-
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
-
-        // --- RESTORED: AVATAR INTERACTION ---
-        const avatarFrame = document.getElementById('interactive-avatar');
-        if (avatarFrame) {
-            document.addEventListener('mousemove', (e) => {
-                const { clientX, clientY } = e;
-                const { left, top, width, height } = avatarFrame.getBoundingClientRect();
-                const centerX = left + width / 2;
-                const centerY = top + height / 2;
-                let moveX = (clientX - centerX) / 35;
-                let moveY = (clientY - centerY) / 35;
-                avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
-            });
-            avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
-        }
-
-        const reveals = document.querySelectorAll('.reveal');
-        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
-        reveals.forEach(r => observer.observe(r));
-
-        // --- RESTORED: MENU SYNC & SCROLL ---
-        let isInitialLoad = true;
-        window.addEventListener('scroll', () => {
-            const winScroll = window.pageYOffset;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
-            if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
-            
-            let current = "home";
-            const sections = document.querySelectorAll('section, footer');
-            sections.forEach(s => {
-                const sectionTop = s.offsetTop;
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
-                    current = "contact";
-                } else if (winScroll >= (sectionTop - 300)) {
-                    current = s.getAttribute('id');
-                }
-            });
-
-            document.querySelectorAll('.nav-link').forEach(l => {
-                const wasActive = l.classList.contains('active');
-                l.classList.remove('active');
-                if (l.getAttribute('href') === `#${current}`) {
-                    l.classList.add('active');
-                    // Tự động cuộn thanh menu trên mobile để mục Active nằm giữa
-                    if (!isInitialLoad && !wasActive) {
-                        l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }
-                }
-            });
-            if (winScroll > 50) isInitialLoad = false;
+        // 3. UI LOGIC & OTHER UTILS
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const lProg = document.getElementById('loader-progress');
+            const lNum = document.getElementById('loader-num');
+            let p = 0;
+            const interval = setInterval(() => {
+                p += Math.floor(Math.random() * 5) + 2;
+                if (p >= 100) { p = 100; clearInterval(interval); setTimeout(() => loader.classList.add('hidden'), 500); }
+                lProg.style.width = p + '%';
+                lNum.innerText = p.toString().padStart(2, '0');
+            }, 50);
         });
 
-        document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        setInterval(() => {
+            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }, 1000);
+
+        const observer = new IntersectionObserver((es) => {
+            es.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+
+        const btt = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            btt.classList.toggle('show', window.scrollY > 500);
+            document.getElementById('progress-bar').style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
+        });
+        btt.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
     </script>
 </body>
 </html>
