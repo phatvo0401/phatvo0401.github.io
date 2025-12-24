@@ -45,7 +45,6 @@
         }
         @media (pointer: coarse) { #cursor { display: none; } }
 
-        /* --- MÀN HÌNH LOADING --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050a09; z-index: 10000;
@@ -142,7 +141,6 @@
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
 
-        /* --- 3D VIEWPORT STYLES --- */
         .portfolio-grid-3d {
             display: grid; grid-template-columns: 1fr; gap: 20px;
             max-width: 1200px; margin: 0 auto; height: auto;
@@ -159,7 +157,7 @@
 
         .viewport-box {
             position: relative; border-radius: 20px; border: 1px solid var(--border);
-            background: radial-gradient(circle at center, #111, #050a09); overflow: hidden; min-height: 400px;
+            background: #050a09; overflow: hidden; min-height: 400px;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -417,11 +415,11 @@
                     <div class="hud-label">Technical Stats</div>
                     <div class="text-[11px] border-b border-white/5 pb-2 flex justify-between">
                         <span class="text-gray-500">Geometry</span>
-                        <span id="poly-count" class="miku-text">0 Polys</span>
+                        <span id="poly-count" class="miku-text">Calculating...</span>
                     </div>
                     <div class="text-[11px] flex justify-between">
                         <span class="text-gray-500">Lighting</span>
-                        <span class="miku-text">Studio Miku V3</span>
+                        <span class="miku-text">Studio V4 Fixed</span>
                     </div>
                 </div>
             </div>
@@ -440,12 +438,12 @@
                 <div>
                     <div class="hud-label mb-4">Project Info</div>
                     <p class="text-xs text-gray-100 font-bold uppercase" id="model-name">Featured Sculpture</p>
-                    <p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Trình diễn mô hình dạng khối với hệ thống ánh sáng Studio chuyên nghiệp.</p>
+                    <p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Trình diễn mô hình khối với hệ thống ánh sáng 3 điểm tối ưu hóa chi tiết.</p>
                 </div>
                 
                 <div class="space-y-4 mt-8">
                     <a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a>
-                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Locked Y-Axis / Physical Material</div>
+                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Fixed Axis / Solid Geometry</div>
                 </div>
             </div>
         </div>
@@ -484,7 +482,7 @@
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // --- 1. JS NỀN DYNAMC (RAINING LINES) ---
+        // 1. DYNAMIC BACKGROUND
         const heroCanvas = document.getElementById('hero-canvas');
         const hctx = heroCanvas.getContext('2d');
         let hW, hH;
@@ -527,96 +525,80 @@
         }
         animateHero();
 
-        // --- 2. THREE.JS 3D ENGINE (OPTIMIZED) ---
+        // 2. STABLE 3D ENGINE
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
         function initThree() {
             scene = new THREE.Scene();
-            
-            // Setup Camera cho góc 30 độ nhìn xuống
-            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 5000);
-            camera.position.set(250, 150, 250); 
+            camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, 10000);
+            camera.position.set(300, 200, 300);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            // Kích hoạt shadow map nếu cần độ chân thực cao hơn
-            renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
 
-            // Hệ thống ánh sáng Studio (Three-point lighting)
-            const mainLight = new THREE.DirectionalLight(0xffffff, 2.5);
-            mainLight.position.set(100, 200, 100);
-            scene.add(mainLight);
-
-            const fillLight = new THREE.PointLight(0x39c5bb, 1.5);
-            fillLight.position.set(-100, 50, 100);
-            scene.add(fillLight);
-
-            const backLight = new THREE.DirectionalLight(0xffffff, 1);
-            backLight.position.set(0, 100, -150);
-            scene.add(backLight);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
+            // Lighting Setup
+            const light1 = new THREE.DirectionalLight(0xffffff, 2);
+            light1.position.set(1, 1, 1);
+            scene.add(light1);
+            const light2 = new THREE.DirectionalLight(0xffffff, 1.5);
+            light2.position.set(-1, 0.5, -1);
+            scene.add(light2);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambient);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
             controls.autoRotateSpeed = 2;
-            
-            // KHÓA TRỤC DỌC & CỐ ĐỊNH GÓC 30 ĐỘ
-            // 30 độ nhìn từ trên xuống tương đương khoảng 1.05 rad (Pi/2 - 30 độ)
-            const angle30deg = Math.PI / 3; 
-            controls.minPolarAngle = angle30deg; 
-            controls.maxPolarAngle = angle30deg; 
-            
-            // Vô hiệu hóa Zoom để giữ bố cục
             controls.enableZoom = false;
 
-            loadStaticModel('model.stl');
+            // Khóa góc 30 độ nhìn từ trên xuống
+            const angle = Math.PI / 3; 
+            controls.minPolarAngle = angle;
+            controls.maxPolarAngle = angle;
 
-            window.addEventListener('resize', onWindowResize);
+            loadModel('model.stl');
+            window.addEventListener('resize', onResize);
             animate();
         }
 
-        function loadStaticModel(url) {
+        function loadModel(url) {
             const loader = new STLLoader();
             loader.load(url, (geometry) => {
-                if (mesh) scene.remove(mesh);
+                if(mesh) scene.remove(mesh);
                 
-                // Chất liệu khối Physical mờ ảo và bắt sáng
-                const material = new THREE.MeshPhysicalMaterial({ 
-                    color: 0x39c5bb,
-                    metalness: 0.2,
-                    roughness: 0.1,
-                    reflectivity: 0.5,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.1
+                // Ép tính toán lại các mặt phẳng để hiển thị tốt nhất
+                geometry.computeVertexNormals();
+                geometry.center(); // Đưa model về tâm tuyệt đối
+
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0x39c5bb, 
+                    shininess: 100, 
+                    side: THREE.DoubleSide // Hiện cả 2 mặt nếu file lỗi
                 });
 
                 mesh = new THREE.Mesh(geometry, material);
                 
-                geometry.center();
-                geometry.computeVertexNormals(); // Làm mượt các mặt khối
-                
+                // Tự động scale vừa khung nhìn
+                geometry.computeBoundingSphere();
                 const radius = geometry.boundingSphere.radius;
-                const scale = 115 / radius; 
+                const scale = 120 / radius; 
                 mesh.scale.set(scale, scale, scale);
 
                 scene.add(mesh);
                 
-                const polyCount = geometry.attributes.position.count / 3;
-                document.getElementById('poly-count').innerText = `${Math.round(polyCount).toLocaleString()} Polys`;
-                document.getElementById('model-name').innerText = "VTP_Sculpture_Active";
-            }, undefined, (error) => {
-                console.error("Lỗi: Hãy đảm bảo file tên 'model.stl' nằm cùng thư mục.", error);
-                document.getElementById('model-name').innerText = "Model not found";
+                const count = geometry.attributes.position.count / 3;
+                document.getElementById('poly-count').innerText = `${Math.round(count).toLocaleString()} Polys`;
+            }, undefined, (err) => {
+                console.error("Lỗi: Không tìm thấy file model.stl");
+                document.getElementById('poly-count').innerText = "Load Failed";
             });
         }
 
-        function onWindowResize() {
+        function onResize() {
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -630,10 +612,9 @@
 
         initThree();
 
-        // --- 3. UI LOGIC (Clock, Cursor, Scroll) ---
-        const clockEl = document.getElementById('digital-clock');
+        // 3. UI LOGIC
         setInterval(() => {
-            clockEl.innerText = new Date().toLocaleTimeString('en-US', { hour12: true });
+            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true });
         }, 1000);
 
         const cursor = document.getElementById('cursor');
@@ -666,12 +647,10 @@
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        const progressBar = document.getElementById('progress-bar');
         window.addEventListener('scroll', () => {
-            const h = document.documentElement, b = document.body, st = 'scrollTop', sh = 'scrollHeight';
-            const percent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-            progressBar.style.width = percent + '%';
-            
+            const h = document.documentElement, b = document.body;
+            const percent = (h.scrollTop||b.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            document.getElementById('progress-bar').style.width = percent + '%';
             const btt = document.getElementById('backToTop');
             if (window.scrollY > 500) btt.classList.add('show');
             else btt.classList.remove('show');
