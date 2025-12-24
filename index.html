@@ -159,7 +159,7 @@
 
         .viewport-box {
             position: relative; border-radius: 20px; border: 1px solid var(--border);
-            background: rgba(0,0,0,0.3); overflow: hidden; min-height: 400px;
+            background: radial-gradient(circle at center, #111, #050a09); overflow: hidden; min-height: 400px;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -421,7 +421,7 @@
                     </div>
                     <div class="text-[11px] flex justify-between">
                         <span class="text-gray-500">Lighting</span>
-                        <span class="miku-text">Studio Miku V2</span>
+                        <span class="miku-text">Studio Miku V3</span>
                     </div>
                 </div>
             </div>
@@ -432,7 +432,7 @@
                 <div class="absolute bottom-4 right-4 border-b border-r border-[#39c5bb]/40 w-4 h-4"></div>
                 
                 <div class="absolute bottom-6 left-6 pointer-events-none">
-                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">VIEWPORT_ACTIVE: 35° FIXED</div>
+                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">VIEWPORT_LOCKED: 30° TOP-DOWN</div>
                 </div>
             </div>
 
@@ -440,12 +440,12 @@
                 <div>
                     <div class="hud-label mb-4">Project Info</div>
                     <p class="text-xs text-gray-100 font-bold uppercase" id="model-name">Featured Sculpture</p>
-                    <p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Mô hình 3D được tối ưu hóa cho trình chiếu danh mục tác phẩm.</p>
+                    <p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Trình diễn mô hình dạng khối với hệ thống ánh sáng Studio chuyên nghiệp.</p>
                 </div>
                 
                 <div class="space-y-4 mt-8">
                     <a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a>
-                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Locked Y-Axis / Studio Material</div>
+                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Locked Y-Axis / Physical Material</div>
                 </div>
             </div>
         </div>
@@ -527,37 +527,54 @@
         }
         animateHero();
 
-        // --- 2. THREE.JS 3D ENGINE (AUTO-LOAD model.stl) ---
+        // --- 2. THREE.JS 3D ENGINE (OPTIMIZED) ---
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
         function initThree() {
             scene = new THREE.Scene();
+            
+            // Setup Camera cho góc 30 độ nhìn xuống
             camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 5000);
-            camera.position.set(300, 150, 300); 
+            camera.position.set(250, 150, 250); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
+            // Kích hoạt shadow map nếu cần độ chân thực cao hơn
+            renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            // Hệ thống ánh sáng Studio (Three-point lighting)
+            const mainLight = new THREE.DirectionalLight(0xffffff, 2.5);
+            mainLight.position.set(100, 200, 100);
+            scene.add(mainLight);
+
+            const fillLight = new THREE.PointLight(0x39c5bb, 1.5);
+            fillLight.position.set(-100, 50, 100);
+            scene.add(fillLight);
+
+            const backLight = new THREE.DirectionalLight(0xffffff, 1);
+            backLight.position.set(0, 100, -150);
+            scene.add(backLight);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
             scene.add(ambientLight);
-
-            const pointLight = new THREE.PointLight(0x39c5bb, 2);
-            pointLight.position.set(200, 200, 200);
-            scene.add(pointLight);
-
-            const pointLight2 = new THREE.PointLight(0xffffff, 0.5);
-            pointLight2.position.set(-200, 100, -200);
-            scene.add(pointLight2);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 3;
+            controls.autoRotateSpeed = 2;
+            
+            // KHÓA TRỤC DỌC & CỐ ĐỊNH GÓC 30 ĐỘ
+            // 30 độ nhìn từ trên xuống tương đương khoảng 1.05 rad (Pi/2 - 30 độ)
+            const angle30deg = Math.PI / 3; 
+            controls.minPolarAngle = angle30deg; 
+            controls.maxPolarAngle = angle30deg; 
+            
+            // Vô hiệu hóa Zoom để giữ bố cục
+            controls.enableZoom = false;
 
-            // TỰ ĐỘNG LOAD FILE model.stl
             loadStaticModel('model.stl');
 
             window.addEventListener('resize', onWindowResize);
@@ -569,17 +586,23 @@
             loader.load(url, (geometry) => {
                 if (mesh) scene.remove(mesh);
                 
-                const material = new THREE.MeshPhongMaterial({ 
-                    color: 0x39c5bb, 
-                    specular: 0x111111, 
-                    shininess: 100 
+                // Chất liệu khối Physical mờ ảo và bắt sáng
+                const material = new THREE.MeshPhysicalMaterial({ 
+                    color: 0x39c5bb,
+                    metalness: 0.2,
+                    roughness: 0.1,
+                    reflectivity: 0.5,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.1
                 });
+
                 mesh = new THREE.Mesh(geometry, material);
                 
                 geometry.center();
-                geometry.computeBoundingSphere();
+                geometry.computeVertexNormals(); // Làm mượt các mặt khối
+                
                 const radius = geometry.boundingSphere.radius;
-                const scale = 110 / radius; 
+                const scale = 115 / radius; 
                 mesh.scale.set(scale, scale, scale);
 
                 scene.add(mesh);
@@ -607,7 +630,7 @@
 
         initThree();
 
-        // --- 3. UI LOGIC (Digital Clock, Cursor, etc.) ---
+        // --- 3. UI LOGIC (Clock, Cursor, Scroll) ---
         const clockEl = document.getElementById('digital-clock');
         setInterval(() => {
             clockEl.innerText = new Date().toLocaleTimeString('en-US', { hour12: true });
