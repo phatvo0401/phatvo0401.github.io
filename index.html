@@ -306,17 +306,17 @@
         </div>
 
         <div class="flex justify-between items-end mb-16 reveal">
-            <div><h3 class="text-2xl font-black miku-text uppercase tracking-tighter">3D DIGITAL SCULPT</h3><p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Interactive STL Viewer</p></div>
-            <a href="#" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL MODELS</a>
+            <div><h3 class="text-2xl font-black miku-text uppercase tracking-tighter">3D DIGITAL SCULPT</h3><p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Interactive Environmental Render</p></div>
+            <a href="#" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">EXPLORE MODELS</a>
         </div>
 
         <div class="portfolio-grid-3d reveal">
             <div class="info-card-3d">
-                <div><div class="hud-label mb-4">Designer Profile</div><p class="text-xs text-gray-400 leading-relaxed">Chuyên gia thiết kế mô hình đa chiều, tập trung vào sự tinh xảo và tính thẩm mỹ kỹ thuật cao.</p></div>
+                <div><div class="hud-label mb-4">Rendering Engine</div><p class="text-xs text-gray-400 leading-relaxed">Sử dụng hệ thống vật liệu Standard PBR với độ tương phản Metal-Roughness cao, tạo hiệu ứng phản chiếu ánh sáng động.</p></div>
                 <div class="space-y-4 mt-8">
                     <div class="hud-label">Technical Stats</div>
                     <div class="text-[11px] border-b border-white/5 pb-2 flex justify-between"><span class="text-gray-500">Geometry</span><span id="poly-count" class="miku-text">Calculating...</span></div>
-                    <div class="text-[11px] flex justify-between"><span class="text-gray-500">Lighting</span><span class="miku-text">Studio V4 Fixed</span></div>
+                    <div class="text-[11px] flex justify-between"><span class="text-gray-500">Lighting</span><span class="miku-text">Miku-Neon Dynamic</span></div>
                 </div>
             </div>
 
@@ -325,13 +325,13 @@
                 <div class="absolute top-4 left-4 border-t border-l border-[#39c5bb]/40 w-4 h-4"></div>
                 <div class="absolute bottom-4 right-4 border-b border-r border-[#39c5bb]/40 w-4 h-4"></div>
                 <div class="absolute bottom-6 left-6 pointer-events-none">
-                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">VIEWPORT_LOCKED: CENTERED_AXIS</div>
+                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">SYSTEM_LIVE: RAYTRACING_SIM</div>
                 </div>
             </div>
 
             <div class="info-card-3d">
-                <div><div class="hud-label mb-4">Project Info</div><p class="text-xs text-gray-100 font-bold uppercase" id="model-name">Featured Sculpture</p><p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Trình diễn mô hình khối với hệ thống ánh sáng 3 điểm tối ưu hóa chi tiết.</p></div>
-                <div class="space-y-4 mt-8"><a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a><div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Center Aligned / XYZ Locked</div></div>
+                <div><div class="hud-label mb-4">Interaction Guide</div><p class="text-xs text-gray-100 font-bold uppercase" id="model-name">STL Viewer V2.0</p><p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Click & xoay để thấy các dải sáng phản chiếu trên bề mặt mô hình.</p></div>
+                <div class="space-y-4 mt-8"><a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a><div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Real-time Env Mapping</div></div>
             </div>
         </div>
     </section>
@@ -357,7 +357,7 @@
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // 1. DYNAMIC BACKGROUND
+        // 1. DYNAMIC BACKGROUND HERO
         const heroCanvas = document.getElementById('hero-canvas');
         const hctx = heroCanvas.getContext('2d');
         let hW, hH;
@@ -374,49 +374,103 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. STABLE 3D ENGINE
+        // 2. ENHANCED 3D ENGINE (ENVIRONMENT LIGHTING)
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
         function initThree() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 140); 
+            camera.position.set(0, 40, 140); 
+            
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ReinhardToneMapping;
             container.appendChild(renderer.domElement);
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
-            mainLight.position.set(20, 40, 20);
-            scene.add(mainLight);
+
+            // Lighting Setup - Hệ thống đèn tạo khối
+            const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambient);
+
+            // Đèn Neon chính (Miku Blue)
+            const light1 = new THREE.PointLight(0x39c5bb, 15, 200);
+            light1.position.set(50, 50, 50);
+            scene.add(light1);
+
+            // Đèn phụ tạo bóng đổ và tương phản
+            const light2 = new THREE.PointLight(0xffffff, 5, 200);
+            light2.position.set(-50, 0, 50);
+            scene.add(light2);
+
+            // Đèn viền (Rim Light) để tách khối khỏi nền
+            const light3 = new THREE.DirectionalLight(0x39c5bb, 2);
+            light3.position.set(0, -20, -50);
+            scene.add(light3);
+
             const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
-            polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
+            polarGrid.position.y = -35; 
+            polarGrid.material.opacity = 0.2; 
+            polarGrid.material.transparent = true;
             scene.add(polarGrid);
+
             controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.dampingFactor = 0.05; controls.enablePan = false; 
-            controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
-            controls.enableZoom = true; controls.minDistance = 60; controls.maxDistance = 220;  
-            controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
+            controls.enableDamping = true; 
+            controls.dampingFactor = 0.05; 
+            controls.autoRotate = true; 
+            controls.autoRotateSpeed = 1.8;
+            controls.enableZoom = true; 
+            controls.minDistance = 80; 
+            controls.maxDistance = 180;  
+            controls.minPolarAngle = Math.PI / 4; 
+            controls.maxPolarAngle = Math.PI / 1.5;
+
+            // Load Model với PBR Material
             const loader = new STLLoader();
             loader.load('model.stl', function (geometry) {
                 geometry.center(); 
-                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 }));
+                
+                // Nâng cấp Vật liệu: Kim loại bóng loáng phản xạ ánh sáng miku
+                const material = new THREE.MeshStandardMaterial({ 
+                    color: 0x111111,         // Màu gốc tối để đèn neon nổi bật
+                    metalness: 0.9,          // Độ kim loại cao
+                    roughness: 0.15,         // Hơi nhám để bắt sáng mềm
+                    emissive: 0x39c5bb,      // Tự phát sáng nhẹ ở các khe
+                    emissiveIntensity: 0.05
+                });
+
+                mesh = new THREE.Mesh(geometry, material);
                 mesh.rotation.x = -Math.PI / 2;
+                
                 geometry.computeBoundingBox();
-                const bSize = new THREE.Vector3(); geometry.boundingBox.getSize(bSize);
-                const scale = 70 / Math.max(bSize.x, bSize.y, bSize.z); 
-                mesh.scale.set(scale, scale, scale); mesh.position.y = -35 + (bSize.z * scale / 2);
+                const bSize = new THREE.Vector3(); 
+                geometry.boundingBox.getSize(bSize);
+                const scale = 75 / Math.max(bSize.x, bSize.y, bSize.z); 
+                mesh.scale.set(scale, scale, scale); 
+                mesh.position.y = -20;
+                
                 scene.add(mesh);
                 document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
             });
-            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
-            function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+
+            window.addEventListener('resize', () => { 
+                camera.aspect = container.clientWidth / container.clientHeight; 
+                camera.updateProjectionMatrix(); 
+                renderer.setSize(container.clientWidth, container.clientHeight); 
+            });
+
+            function animate() { 
+                requestAnimationFrame(animate); 
+                controls.update(); 
+                // Đồng bộ ánh sáng xoay nhẹ theo camera để tạo hiệu ứng "ánh đèn sân khấu"
+                light1.position.x = Math.sin(Date.now() * 0.001) * 60;
+                renderer.render(scene, camera); 
+            }
             animate();
         }
         initThree();
 
-        // 3. UI SCRIPTS
+        // 3. UI SCRIPTS & MOBILE FIXES
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
         const loader = document.getElementById('loader');
@@ -428,14 +482,12 @@
                 clearInterval(loadInt); 
                 setTimeout(() => { 
                     loader.classList.add('hidden');
-                    // Force Scroll to Top after loader hides
-                    window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
+                    window.scrollTo(0, 0); // Gia cố vị trí sau loader
                 }, 500); 
             }
             loaderProgress.style.width = progress + '%';
             loaderNum.innerText = progress.toString().padStart(2, '0');
-        }, 150);
+        }, 120);
 
         function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
         setInterval(updateClock, 1000); updateClock();
@@ -452,8 +504,6 @@
                 const centerY = top + height / 2;
                 let moveX = (clientX - centerX) / 35;
                 let moveY = (clientY - centerY) / 35;
-                moveX = Math.max(Math.min(moveX, 10), -10);
-                moveY = Math.max(Math.min(moveY, 10), -10);
                 avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
             });
             avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
@@ -463,7 +513,6 @@
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
         reveals.forEach(r => observer.observe(r));
 
-        // Logic Menu & Scroll
         let isInitialLoad = true;
         window.addEventListener('scroll', () => {
             const winScroll = window.pageYOffset;
@@ -487,8 +536,6 @@
                 l.classList.remove('active');
                 if (l.getAttribute('href') === `#${current}`) {
                     l.classList.add('active');
-                    
-                    // Auto-scroll Menu Mobile
                     if (!isInitialLoad && !wasActive) {
                         l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     }
