@@ -40,7 +40,7 @@
         #nav-menu { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
 
         @media (pointer: fine) {
-            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-upload { cursor: none !important; }
+            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action { cursor: none !important; }
             #cursor { display: block; }
         }
         @media (pointer: coarse) { #cursor { display: none; } }
@@ -142,7 +142,7 @@
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
 
-        /* --- 3D VIEWPORT STYLES (CẬP NHẬT MÀU MIKU) --- */
+        /* --- 3D VIEWPORT STYLES --- */
         .portfolio-grid-3d {
             display: grid; grid-template-columns: 1fr; gap: 20px;
             max-width: 1200px; margin: 0 auto; height: auto;
@@ -170,13 +170,13 @@
         }
         @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
 
-        .btn-upload {
+        .btn-action {
             background: var(--miku); color: #050a09; font-weight: 800;
             padding: 12px; border-radius: 8px; font-size: 11px; text-align: center;
             display: block; width: 100%; transition: 0.3s; cursor: pointer;
             text-transform: uppercase; letter-spacing: 1px;
         }
-        .btn-upload:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 197, 187, 0.4); }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 197, 187, 0.4); }
     </style>
 </head>
 <body class="scroll-smooth">
@@ -439,12 +439,12 @@
             <div class="info-card-3d">
                 <div>
                     <div class="hud-label mb-4">Project Info</div>
-                    <p class="text-xs text-gray-400 font-italic" id="model-name">No model loaded</p>
+                    <p class="text-xs text-gray-100 font-bold uppercase" id="model-name">Featured Sculpture</p>
+                    <p class="text-[10px] text-gray-500 mt-2 italic leading-relaxed">Mô hình 3D được tối ưu hóa cho trình chiếu danh mục tác phẩm.</p>
                 </div>
                 
                 <div class="space-y-4 mt-8">
-                    <label for="stl-upload" class="btn-upload">LOAD STL MODEL</label>
-                    <input type="file" id="stl-upload" class="hidden" accept=".stl">
+                    <a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a>
                     <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Locked Y-Axis / Studio Material</div>
                 </div>
             </div>
@@ -527,198 +527,136 @@
         }
         animateHero();
 
-        // --- 2. THREE.JS 3D ENGINE ---
+        // --- 2. THREE.JS 3D ENGINE (AUTO-LOAD model.stl) ---
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
         function initThree() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 1, 2000);
-            camera.position.set(450, 250, 450); 
+            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 5000);
+            camera.position.set(300, 150, 300); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            const grid = new THREE.GridHelper(800, 40, 0x39c5bb, 0x0a1f1d);
-            grid.position.y = -80;
-            grid.material.opacity = 0.15;
-            grid.material.transparent = true;
-            scene.add(grid);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
-            sunLight.position.set(200, 500, 200);
-            scene.add(sunLight);
+            const pointLight = new THREE.PointLight(0x39c5bb, 2);
+            pointLight.position.set(200, 200, 200);
+            scene.add(pointLight);
 
-            const fillLight = new THREE.PointLight(0x39c5bb, 1.2);
-            fillLight.position.set(-200, 100, -200);
-            scene.add(fillLight);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const pointLight2 = new THREE.PointLight(0xffffff, 0.5);
+            pointLight2.position.set(-200, 100, -200);
+            scene.add(pointLight2);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            const angle = Math.PI / 2.8; 
-            controls.minPolarAngle = angle;
-            controls.maxPolarAngle = angle;
-            
-            animateThree();
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 3;
+
+            // TỰ ĐỘNG LOAD FILE model.stl
+            loadStaticModel('model.stl');
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
         }
 
-        function loadModel(file) {
+        function loadStaticModel(url) {
             const loader = new STLLoader();
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const geometry = loader.parse(e.target.result);
+            loader.load(url, (geometry) => {
                 if (mesh) scene.remove(mesh);
-                geometry.computeVertexNormals();
-                geometry.center(); 
-
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: 0x888888, 
-                    roughness: 0.4,
-                    metalness: 0.2
+                
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: 0x39c5bb, 
+                    specular: 0x111111, 
+                    shininess: 100 
                 });
-
                 mesh = new THREE.Mesh(geometry, material);
-                const box = new THREE.Box3().setFromObject(mesh);
-                const size = box.getSize(new THREE.Vector3()).length();
-                const scale = 260 / size; 
+                
+                geometry.center();
+                geometry.computeBoundingSphere();
+                const radius = geometry.boundingSphere.radius;
+                const scale = 110 / radius; 
                 mesh.scale.set(scale, scale, scale);
-                scene.add(mesh);
 
-                document.getElementById('model-name').innerText = file.name;
-                document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + " Polys";
-            };
-            reader.readAsArrayBuffer(file);
+                scene.add(mesh);
+                
+                const polyCount = geometry.attributes.position.count / 3;
+                document.getElementById('poly-count').innerText = `${Math.round(polyCount).toLocaleString()} Polys`;
+                document.getElementById('model-name').innerText = "VTP_Sculpture_Active";
+            }, undefined, (error) => {
+                console.error("Lỗi: Hãy đảm bảo file tên 'model.stl' nằm cùng thư mục.", error);
+                document.getElementById('model-name').innerText = "Model not found";
+            });
         }
 
-        document.getElementById('stl-upload').onchange = (e) => {
-            if(e.target.files[0]) loadModel(e.target.files[0]);
-        };
+        function onWindowResize() {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
 
-        function animateThree() {
-            requestAnimationFrame(animateThree);
+        function animate() {
+            requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-
         initThree();
 
-        // --- 3. LOADING & CORE UI LOGIC ---
-        window.addEventListener('load', () => {
-            const progress = document.getElementById('loader-progress');
-            const loaderNum = document.getElementById('loader-num');
-            const loader = document.getElementById('loader');
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        loader.classList.add('hidden');
-                        document.querySelectorAll('.reveal').forEach(el => {
-                            if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('active');
-                        });
-                    }, 400);
-                } else {
-                    width += Math.floor(Math.random() * 15) + 1;
-                    if (width > 100) width = 100;
-                    progress.style.width = width + '%';
-                    loaderNum.textContent = width.toString().padStart(2, '0');
-                }
-            }, 80);
-        });
+        // --- 3. UI LOGIC (Digital Clock, Cursor, etc.) ---
+        const clockEl = document.getElementById('digital-clock');
+        setInterval(() => {
+            clockEl.innerText = new Date().toLocaleTimeString('en-US', { hour12: true });
+        }, 1000);
 
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('digital-clock').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        }
-        setInterval(updateClock, 1000); updateClock();
-
-        // Cursor
         const cursor = document.getElementById('cursor');
-        if (!('ontouchstart' in window)) {
-            document.addEventListener('mousemove', e => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-            });
-            document.querySelectorAll('a, button, .skill-tag, .project-card, .avatar-frame, .btn-upload').forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
-                    cursor.style.background = 'rgba(57, 197, 187, 0.1)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                    cursor.style.background = 'transparent';
-                });
-            });
-        }
-
-        // Avatar Interactive
-        const avatar = document.getElementById('interactive-avatar');
-        if (!('ontouchstart' in window)) {
-            document.addEventListener('mousemove', (e) => {
-                const { clientX, clientY } = e;
-                const { left, top, width, height } = avatar.getBoundingClientRect();
-                const centerX = left + width / 2;
-                const centerY = top + height / 2;
-                const moveX = (clientX - centerX) / 10; 
-                const moveY = (clientY - centerY) / 10;
-                const dist = Math.hypot(clientX - centerX, clientY - centerY);
-                if (dist < 400) {
-                    avatar.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${-moveY/2}deg) rotateY(${moveX/2}deg)`;
-                } else {
-                    avatar.style.transform = `translate3d(0, 0, 0) rotateX(0) rotateY(0)`;
-                }
-            });
-        }
-
-        // Scroll Logic
-        const sections = document.querySelectorAll("section, footer"); 
-        const navLinks = document.querySelectorAll(".nav-link");
-        const navMenu = document.getElementById('nav-menu');
-        const progressBar = document.getElementById('progress-bar');
-        const btt = document.getElementById('backToTop');
-
-        window.addEventListener("scroll", () => {
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.documentElement.scrollHeight;
-            progressBar.style.width = (scrollPos / (bodyHeight - windowHeight)) * 100 + "%";
-
-            let current = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                if (scrollPos + windowHeight >= bodyHeight - 20) {
-                    current = "contact";
-                } else if (scrollPos >= sectionTop - 150) {
-                    current = section.getAttribute("id");
-                }
-            });
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
-            });
-
-            if (scrollPos > 400) btt.classList.add('show'); else btt.classList.remove('show');
-
-            // Scroll reveal
-            document.querySelectorAll('.reveal').forEach(el => {
-                if(el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
-            });
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
-        btt.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const progress = document.getElementById('loader-progress');
+            const num = document.getElementById('loader-num');
+            let p = 0;
+            let interval = setInterval(() => {
+                p += Math.floor(Math.random() * 5) + 2;
+                if(p >= 100) {
+                    p = 100;
+                    clearInterval(interval);
+                    setTimeout(() => loader.classList.add('hidden'), 500);
+                }
+                progress.style.width = p + '%';
+                num.innerText = p.toString().padStart(2, '0');
+            }, 30);
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        const progressBar = document.getElementById('progress-bar');
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement, b = document.body, st = 'scrollTop', sh = 'scrollHeight';
+            const percent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
+            progressBar.style.width = percent + '%';
+            
+            const btt = document.getElementById('backToTop');
+            if (window.scrollY > 500) btt.classList.add('show');
+            else btt.classList.remove('show');
+        });
+
+        document.getElementById('backToTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>
