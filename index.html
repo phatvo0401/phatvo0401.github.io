@@ -158,6 +158,7 @@
         .viewport-box {
             position: relative; border-radius: 20px; border: 1px solid var(--border);
             background: #050a09; overflow: hidden; min-height: 400px;
+            touch-action: none; /* Khóa cuộn trang khi tương tác với 3D */
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -371,7 +372,7 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. STABLE 3D ENGINE - FIXED 30 DEGREE ANGLE, CIRCULAR GRID & SMOOTH ZOOM
+        // 2. STABLE 3D ENGINE
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
@@ -391,19 +392,22 @@
             mainLight.position.set(20, 40, 20);
             scene.add(mainLight);
 
-            // THÊM MẶT PHẲNG GRID HÌNH TRÒN (POLAR GRID)
+            // MẶT PHẲNG GRID HÌNH TRÒN (POLAR GRID)
             const radius = 100;
             const sectors = 16;
             const rings = 8;
             const polarGrid = new THREE.PolarGridHelper(radius, sectors, rings, 64, 0x39c5bb, 0x1a2e2c);
-            polarGrid.position.y = -35; // Nằm dưới model
+            polarGrid.position.y = -35; 
             polarGrid.material.opacity = 0.2;
             polarGrid.material.transparent = true;
             scene.add(polarGrid);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05; // Smooth Damping cho cả xoay và zoom
+            controls.dampingFactor = 0.05;
+            
+            // CẬP NHẬT QUAN TRỌNG CHO MOBILE: Khóa Pan (di chuyển tâm)
+            controls.enablePan = false; 
             
             controls.autoRotate = true;
             controls.autoRotateSpeed = 2.5;
@@ -421,28 +425,17 @@
             const loader = new STLLoader();
             loader.load('model.stl', function (geometry) {
                 geometry.center(); 
-                
-                const material = new THREE.MeshPhongMaterial({ 
-                    color: 0x39c5bb, 
-                    specular: 0x111111, 
-                    shininess: 100 
-                });
-                
+                const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
                 mesh = new THREE.Mesh(geometry, material);
                 mesh.rotation.x = -Math.PI / 2;
-
                 geometry.computeBoundingBox();
                 const bSize = new THREE.Vector3();
                 geometry.boundingBox.getSize(bSize);
                 const maxDim = Math.max(bSize.x, bSize.y, bSize.z);
                 const scale = 70 / maxDim; 
                 mesh.scale.set(scale, scale, scale);
-                
-                // Đặt chân model chạm mặt lưới tọa độ
                 mesh.position.y = -35 + (bSize.z * scale / 2);
-
                 scene.add(mesh);
-
                 document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
                 document.getElementById('model-name').innerText = "VTP_ENGINEERING_SCULPT";
             }, undefined, (e) => {
@@ -465,7 +458,7 @@
         }
         initThree();
 
-        // 3. UI SCRIPTS (GIỮ NGUYÊN)
+        // 3. UI SCRIPTS
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
         const loader = document.getElementById('loader');
