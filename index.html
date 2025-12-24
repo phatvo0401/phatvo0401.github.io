@@ -30,19 +30,22 @@
             position: relative;
         }
 
-        #nav-menu { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        #nav-menu { 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            scroll-behavior: smooth;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (pointer: fine) {
             body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action, .sub-viewport { cursor: none !important; }
             #cursor { display: block; }
         }
-        #cursor {
-            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9999;
-            transition: transform 0.1s ease-out, background 0.3s ease;
-            transform: translate(-50%, -50%); display: none;
-        }
+        @media (pointer: coarse) { #cursor { display: none; } }
 
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -51,9 +54,19 @@
             transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s;
         }
         #loader.hidden { transform: translateY(-100%); opacity: 0; visibility: hidden; }
+        .loader-content { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .loader-logo { display: flex; align-items: center; font-size: 1.125rem; letter-spacing: -0.05em; margin-bottom: 20px; }
         .loader-bar-container { width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; border-radius: 2px; }
         #loader-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--miku); transition: width 0.2s ease; }
         .loader-percentage { font-family: monospace; font-size: 5rem; font-weight: 900; color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; }
+
+        .miku-text { color: var(--miku); }
+        #cursor {
+            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            transition: transform 0.1s ease-out, background 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
 
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
@@ -67,57 +80,153 @@
             background: rgba(57, 197, 187, 0.1);
         }
 
-        #hero-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; pointer-events: none; z-index: 0; mask-image: linear-gradient(to bottom, black 80%, transparent 100%); }
-        .adobe-icon { position: absolute; animation: floatRandom 10s infinite ease-in-out; filter: grayscale(100%) brightness(150%); opacity: 0.15; }
-        @keyframes floatRandom { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(15px, -20px) rotate(5deg); } 66% { transform: translate(-10px, -35px) rotate(-5deg); } }
+        #hero-canvas-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+            overflow: hidden; pointer-events: none; z-index: 0;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+        
+        @keyframes floatRandom {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(15px, -20px) rotate(5deg); }
+            66% { transform: translate(-10px, -35px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .adobe-icon { 
+            position: absolute; 
+            animation: floatRandom 10s infinite ease-in-out; 
+            filter: grayscale(100%) brightness(150%); 
+            opacity: 0.15;
+            transition: opacity 0.5s ease;
+        }
 
-        .avatar-frame { width: 180px; height: 180px; border-radius: 50%; border: 2px solid var(--miku); overflow: hidden; background: #111; transition: transform 0.4s ease-out; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card:hover { background: rgba(57, 197, 187, 0.05); border-color: rgba(57, 197, 187, 0.3); transform: translateY(-5px); }
+        .avatar-frame {
+            width: 180px; height: 180px; border-radius: 50%; 
+            border: 2px solid var(--miku);
+            overflow: hidden; background: #111;
+            transition: transform 0.4s ease-out;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover { 
+            background: rgba(57, 197, 187, 0.05); 
+            border-color: rgba(57, 197, 187, 0.3); 
+            transform: translateY(-5px); 
+        }
 
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        #progress-bar { height: 2px; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); position: fixed; top: 0; left: 0; z-index: 60; }
-        .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; transition: all 0.3s ease; }
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
+        #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
+        
+        .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: all 0.3s ease; }
         .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); transform: scale(1.05); }
         
         .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
-        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .project-card:hover .project-img { transform: scale(1.08); } 
-        .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
-
+        
+        .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
         .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
         .timeline-dot { width: 12px; height: 12px; background: var(--miku); border-radius: 50%; position: absolute; left: -7px; top: 7px; border: 2px solid #050a09; }
-
-        .portfolio-grid-3d { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
-        @media (min-width: 1024px) { .portfolio-grid-3d { grid-template-columns: 280px 1fr 280px; height: 500px; } }
-        .viewport-box { position: relative; border-radius: 20px; border: 1px solid var(--border); background: #050a09; overflow: hidden; min-height: 400px; touch-action: none; }
         
-        .sub-3d-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 20px auto 0; }
-        .sub-viewport { aspect-ratio: 1/1; border-radius: 15px; border: 1px solid rgba(57, 197, 187, 0.1); background: var(--glass); overflow: hidden; position: relative; }
-
-        #backToTop { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku); color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px); }
+        #backToTop { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku); color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px); }
         #backToTop.show { opacity: 1; visibility: visible; }
-        .btn-action { background: var(--miku); color: #050a09; font-weight: 800; padding: 12px; border-radius: 8px; font-size: 11px; text-align: center; display: block; width: 100%; transition: 0.3s; text-transform: uppercase; }
-        .scan-line { position: absolute; width: 100%; height: 1px; background: var(--miku); opacity: 0.2; top: 0; animation: scanMove 3s linear infinite; pointer-events: none; }
+        .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
+        .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
+
+        .portfolio-grid-3d {
+            display: grid; grid-template-columns: 1fr; gap: 20px;
+            max-width: 1200px; margin: 0 auto; height: auto;
+        }
+        @media (min-width: 1024px) {
+            .portfolio-grid-3d { grid-template-columns: 280px 1fr 280px; height: 500px; }
+        }
+
+        .info-card-3d {
+            background: var(--glass); border: 1px solid rgba(57, 197, 187, 0.1);
+            border-radius: 15px; padding: 24px; backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .viewport-box {
+            position: relative; border-radius: 20px; border: 1px solid var(--border);
+            background: #050a09; overflow: hidden; min-height: 400px;
+            touch-action: none;
+        }
+
+        .sub-3d-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            max-width: 1200px; margin: 20px auto 0;
+        }
+        .sub-viewport {
+            aspect-ratio: 1/1; border-radius: 15px; border: 1px solid rgba(57, 197, 187, 0.1);
+            background: var(--glass); overflow: hidden; position: relative;
+        }
+
+        .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        .scan-line {
+            position: absolute; width: 100%; height: 1px; background: var(--miku);
+            opacity: 0.2; top: 0; animation: scanMove 3s linear infinite; pointer-events: none;
+        }
         @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
+
+        .btn-action {
+            background: var(--miku); color: #050a09; font-weight: 800;
+            padding: 12px; border-radius: 8px; font-size: 11px; text-align: center;
+            display: block; width: 100%; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
     </style>
 </head>
-<body>
+<body class="scroll-smooth">
+
+    <div id="hero-canvas-container">
+        <canvas id="hero-canvas"></canvas>
+        <div class="adobe-icon" style="top: 19%; left: 25%; animation-duration: 12s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-photoshop-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Ps"></div>
+        <div class="adobe-icon" style="top: 30%; left: 80%; animation-duration: 15s; animation-delay: -2s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-illustrator-cc-3.svg" class="w-10 md:w-14 h-10 md:h-14" alt="Ai"></div>
+        <div class="adobe-icon" style="top: 40%; left: 22%; animation-duration: 18s; animation-delay: -5s;"><img src="https://cdn.worldvectorlogo.com/logos/after-effects-1.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Ae"></div>
+        <div class="adobe-icon" style="top: 60%; left: 35%; animation-duration: 14s; animation-delay: -1s;"><img src="https://cdn.worldvectorlogo.com/logos/premiere-pro-cc.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr"></div>
+        <div class="adobe-icon" style="top: 75%; left: 20%; animation-duration: 16s; animation-delay: -3s;"><img src="https://cdn.worldvectorlogo.com/logos/capcut-3.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Cc"></div>
+        <div class="adobe-icon" style="top: 20%; left: 65%; animation-duration: 20s; animation-delay: -4s;"><img src="https://cdn.worldvectorlogo.com/logos/blender-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Bl"></div>
+        <div class="adobe-icon" style="top: 55%; left: 85%; animation-duration: 13s; animation-delay: -7s;"><img src="https://cdn.worldvectorlogo.com/logos/figma-icon.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Fg"></div>
+        <div class="adobe-icon" style="top: 60%; left: 70%; animation-duration: 17s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-indesign-cc-icon.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Id"></div>
+    </div>
 
     <div id="loader">
-        <div class="loader-bar-container"><div id="loader-progress"></div></div>
+        <div class="loader-content">
+            <div class="loader-logo"><span class="font-black miku-text mr-1.5 uppercase">VTP</span><span class="font-light text-white opacity-90">Design</span></div>
+            <div class="loader-bar-container"><div id="loader-progress"></div></div>
+        </div>
         <div id="loader-num" class="loader-percentage">00</div>
     </div>
 
-    <div id="progress-bar"></div>
+    <div id="progress-container"><div id="progress-bar"></div></div>
     <div id="cursor"></div>
 
     <nav class="fixed w-full z-50 py-3 px-4 md:px-10 flex justify-between items-center bg-[#050a09]/70 backdrop-blur-xl border-b border-white/5">
-        <div class="flex flex-col"><div class="text-md md:text-lg flex items-center font-black uppercase"><span class="miku-text mr-1.5">VTP</span><span class="text-white opacity-90">Design</span></div><span id="digital-clock" class="text-[8px] font-mono text-gray-500">00:00:00 AM</span></div>
-        <div id="nav-menu" class="flex items-center space-x-1 text-[10px] font-bold uppercase tracking-widest">
+        <div class="flex flex-col flex-shrink-0 mr-6">
+            <div class="text-md md:text-lg flex items-center tracking-tighter">
+                <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
+                <span class="font-light text-white opacity-90">Design</span>
+            </div>
+            <div class="flex flex-col space-y-0.5 mt-1">
+                <div class="items-center space-x-1.5 hidden md:flex">
+                    <div class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39c5bb] opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#39c5bb]"></span></div>
+                    <span class="text-[8px] font-bold uppercase tracking-widest text-gray-400">Available</span>
+                </div>
+                <span id="digital-clock" class="text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
+            </div>
+        </div>
+        <div id="nav-menu" class="flex items-center space-x-1 text-[10px] font-bold uppercase tracking-widest md:justify-end flex-grow">
             <a href="#home" class="nav-link active">Home</a>
             <a href="#skills" class="nav-link">Skills</a>
             <a href="#career" class="nav-link">Career</a>
@@ -126,33 +235,47 @@
         </div>
     </nav>
 
-    <div id="hero-canvas-container"><canvas id="hero-canvas"></canvas></div>
-
     <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12 relative z-10">
         <div class="text-center mb-16 reveal">
-            <div class="avatar-frame mx-auto mb-8"><img src="avt.JPG" alt="Avatar" class="w-full h-full object-cover"></div>
+            <div class="avatar-frame mx-auto mb-8"><img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover"></div>
             <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
             <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
+            <div class="text-left px-4 reveal">
+                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
+                <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">"Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal"><div><h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4><p class="text-lg font-bold text-white">Đại học Văn Lang</p></div><p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27) - Chuyên ngành Thiết kế Đồ họa</p></div>
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal"><div><h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4><p class="text-lg font-bold text-white">Giải Nhất Thiết kế Logo - MTTQ Việt Nam</p></div><p class="text-gray-500 text-[10px] mt-2">Huyện Củ Chi - Nhiệm kỳ (2024-2029)</p></div>
+            </div>
         </div>
     </section>
 
     <section id="skills" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h3 class="text-2xl font-black mb-8 miku-text uppercase reveal">KỸ NĂNG CÔNG CỤ</h3>
-        <div class="flex flex-wrap gap-3 reveal">
-            <span class="skill-tag">Photoshop</span> <span class="skill-tag">Illustrator</span> <span class="skill-tag">InDesign</span> <span class="skill-tag">Figma</span> <span class="skill-tag">After Effects</span> <span class="skill-tag">Blender</span>
+        <div class="mb-16 reveal"><h3 class="text-2xl font-black mb-8 miku-text uppercase">KỸ NĂNG CÔNG CỤ</h3>
+            <div class="flex flex-wrap gap-3"><span class="skill-tag">Photoshop</span> <span class="skill-tag">Illustrator</span> <span class="skill-tag">InDesign</span> <span class="skill-tag">Figma</span> <span class="skill-tag">After Effects</span> <span class="skill-tag">Premiere Pro</span> <span class="skill-tag">CapCut Pro</span> <span class="skill-tag">Blender</span></div>
+        </div>
+        <div class="reveal"><h3 class="text-2xl font-black mb-8 miku-text uppercase">KỸ NĂNG MỀM</h3>
+            <div class="flex flex-wrap gap-3"><span class="skill-tag">English (B2)</span> <span class="skill-tag">Videography</span> <span class="skill-tag">Photography</span> <span class="skill-tag">Graphic Design</span> <span class="skill-tag">UI / UX</span> <span class="skill-tag">Branding Design</span> <span class="skill-tag">Motion Design</span> <span class="skill-tag">3D Design</span></div>
         </div>
     </section>
 
     <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
-        <h2 class="text-2xl font-black mb-16 miku-text uppercase reveal">KINH NGHIỆM</h2>
+        <h2 class="text-2xl font-black mb-16 miku-text uppercase reveal">KINH NGHIỆM LÀM VIỆC</h2>
         <div class="timeline-container">
-            <div class="timeline-item reveal"><div class="timeline-dot"></div><h4 class="text-lg font-bold uppercase">Merjea_Somewhere-in-town</h4><p class="miku-text text-[10px] font-bold">2025 – Hiện tại</p></div>
-            <div class="timeline-item reveal"><div class="timeline-dot"></div><h4 class="text-lg font-bold uppercase">Bắp Rang Bơ Media</h4><p class="miku-text text-[10px] font-bold">2024 – Hiện tại</p></div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="flex justify-between items-start mb-2"><h4 class="text-lg font-bold uppercase">Merjea_Somewhere-in-town</h4><span class="text-[10px] miku-text font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full">2025 – Hiện tại</span></div><p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase">Media & Content Creator</p><p class="text-gray-500 text-xs">Định hướng hình ảnh và quay dựng video sáng tạo.</p></div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="flex justify-between items-start mb-2"><h4 class="text-lg font-bold uppercase">Bắp Rang Bơ Media</h4><span class="text-[10px] miku-text font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full">2024 – Hiện tại</span></div><p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase">Video Editor & Media Manager</p><p class="text-gray-500 text-xs">Điều phối hậu kỳ video và định hướng phong cách hình ảnh kênh YouTube.</p></div>
         </div>
     </section>
 
     <section id="projects" class="py-24 px-6 max-w-6xl mx-auto border-t border-[#39c5bb]/10">
-        <h3 class="text-2xl font-black miku-text uppercase mb-16 reveal">PROJECTS & 3D MODELS</h3>
+        <h3 class="text-2xl font-black miku-text uppercase mb-16 reveal">PROJECT SPOTLIGHT</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-24">
+            <div class="project-card reveal"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding"><div class="project-overlay"><h4 class="text-xl font-bold uppercase">Gaoogao.com Shop</h4></div></div>
+            <div class="project-card reveal"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video"><div class="project-overlay"><h4 class="text-xl font-bold uppercase">Golden Rooster Collection</h4></div></div>
+        </div>
         <div class="portfolio-grid-3d reveal mb-10">
             <div class="viewport-box md:col-start-2" id="three-container"><div class="scan-line"></div></div>
         </div>
@@ -165,7 +288,12 @@
 
     <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
         <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
-        <p class="text-lg font-bold mb-12">phatvo.0401@gmail.com</p>
+        <p class="text-lg font-bold mb-2">phatvo.0401@gmail.com</p>
+        <div class="flex justify-center gap-8 mt-12 text-[10px] font-bold uppercase tracking-widest">
+            <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
+            <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
+            <a href="https://www.behance.net/phtthnh42" target="_blank" class="social-link">BEHANCE</a>
+        </div>
     </footer>
 
     <button id="backToTop">↑</button>
@@ -177,13 +305,10 @@
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // --- 1. CORE FUNCTIONS (REVEAL & MENU EFFECT) ---
+        // 1. CORE EFFECTS: REVEAL & ACTIVE MENU
         const reveal = () => {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(el => {
-                const windowHeight = window.innerHeight;
-                const revealTop = el.getBoundingClientRect().top;
-                if (revealTop < windowHeight - 50) el.classList.add('active');
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
             });
         };
 
@@ -192,8 +317,7 @@
             const navLinks = document.querySelectorAll('.nav-link');
             let current = "";
             sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) current = section.getAttribute("id");
+                if (pageYOffset >= section.offsetTop - 150) current = section.getAttribute("id");
             });
             navLinks.forEach(link => {
                 link.classList.remove("active");
@@ -201,7 +325,7 @@
             });
         };
 
-        // --- 2. LOADER & INITIAL TRIGGER ---
+        // 2. LOADER LOGIC
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
         const loader = document.getElementById('loader');
@@ -211,7 +335,7 @@
             if (progress >= 100) { 
                 progress = 100; clearInterval(loadInt); 
                 setTimeout(() => { 
-                    loader.classList.add('hidden');
+                    loader.classList.add('hidden'); 
                     reveal(); // HIỆN NGAY LẬP TỨC
                     updateActiveMenu();
                 }, 500); 
@@ -220,7 +344,7 @@
             loaderNum.innerText = progress.toString().padStart(2, '0');
         }, 100);
 
-        // --- 3. SCROLL EVENTS ---
+        // 3. SCROLL & EVENTS
         window.addEventListener('scroll', () => {
             reveal();
             updateActiveMenu();
@@ -231,15 +355,15 @@
             else document.getElementById('backToTop').classList.remove('show');
         });
 
-        // --- 4. THREE.JS LOGIC (1 MAIN + 3 SUBS) ---
-        function initMainModel(file) {
-            const container = document.getElementById('three-container');
+        // 4. 3D MODELS (1 MAIN + 3 SUBS)
+        function initModel(id, file, isMain) {
+            const cont = document.getElementById(id);
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 140);
+            const camera = new THREE.PerspectiveCamera(45, cont.clientWidth / cont.clientHeight, 0.1, 1000);
+            camera.position.z = isMain ? 140 : 100;
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
+            renderer.setSize(cont.clientWidth, cont.clientHeight);
+            cont.appendChild(renderer.domElement);
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const light = new THREE.DirectionalLight(0x39c5bb, 2); light.position.set(20, 40, 20); scene.add(light);
             const controls = new OrbitControls(camera, renderer.domElement);
@@ -248,42 +372,20 @@
                 geo.center();
                 const mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color: 0x39c5bb, shininess: 100 }));
                 mesh.rotation.x = -Math.PI / 2;
-                const b = new THREE.Box3().setFromObject(mesh);
-                const s = 70 / b.getSize(new THREE.Vector3()).length();
-                mesh.scale.set(s, s, s); scene.add(mesh);
+                const scale = (isMain ? 70 : 40) / new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3()).length();
+                mesh.scale.set(scale, scale, scale); scene.add(mesh);
             });
             function anim() { requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); }
             anim();
         }
 
-        function initSubModel(id, file) {
-            const cont = document.getElementById(id);
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-            camera.position.z = 100;
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(cont.clientWidth, cont.clientHeight);
-            cont.appendChild(renderer.domElement);
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            new STLLoader().load(file, (geo) => {
-                geo.center();
-                const m = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color: 0x39c5bb }));
-                m.rotation.x = -Math.PI / 2;
-                const s = 40 / new THREE.Box3().setFromObject(m).getSize(new THREE.Vector3()).length();
-                m.scale.set(s, s, s); scene.add(m);
-                function anim() { requestAnimationFrame(anim); m.rotation.z += 0.02; renderer.render(scene, camera); }
-                anim();
-            });
-        }
+        initModel('three-container', 'model.stl', true);
+        initModel('sub-three-1', 'model.stl', false);
+        initModel('sub-three-2', 'model.stl', false);
+        initModel('sub-three-3', 'model.stl', false);
 
-        initMainModel('model.stl');
-        initSubModel('sub-three-1', 'model.stl');
-        initSubModel('sub-three-2', 'model.stl');
-        initSubModel('sub-three-3', 'model.stl');
-
-        // Digital Clock
+        // UI Helpers
         setInterval(() => { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true }); }, 1000);
-        // Cursor
         document.addEventListener('mousemove', e => { const c = document.getElementById('cursor'); c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
         document.getElementById('backToTop').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
     </script>
