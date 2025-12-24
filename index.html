@@ -143,7 +143,6 @@
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
 
-        /* 3D Grid Styles */
         .portfolio-grid-3d {
             display: grid; grid-template-columns: 1fr; gap: 20px;
             max-width: 1200px; margin: 0 auto; height: auto;
@@ -164,7 +163,7 @@
             touch-action: none;
         }
 
-        /* Thêm style cho 3 ô vuông bên dưới */
+        /* 3 SMALL VIEWPORTS BELOW */
         .sub-3d-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
             max-width: 1200px; margin: 20px auto 0;
@@ -383,6 +382,18 @@
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+        // REVEAL FUNCTION
+        const reveal = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const revealTop = el.getBoundingClientRect().top;
+                if (revealTop < windowHeight - 50) {
+                    el.classList.add('active');
+                }
+            });
+        };
+
         // 1. DYNAMIC BACKGROUND
         const heroCanvas = document.getElementById('hero-canvas');
         const hctx = heroCanvas.getContext('2d');
@@ -400,7 +411,7 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. STABLE 3D ENGINE
+        // 2. MAIN 3D MODEL
         let scene, camera, renderer, controls, mesh;
         const container = document.getElementById('three-container');
 
@@ -442,7 +453,7 @@
         }
         initThree();
 
-        // 3. SUB-VIEWPORTS INITIALIZATION
+        // 3. SUB-VIEWPORTS LOAD SAME MODEL
         function initSubViewport(id, file) {
             const cont = document.getElementById(id);
             const sScene = new THREE.Scene();
@@ -463,17 +474,16 @@
                 m.scale.set(s, s, s); sScene.add(m);
                 function anim() { requestAnimationFrame(anim); m.rotation.z += 0.01; sRen.render(sScene, sCam); }
                 anim();
-            }, undefined, () => { console.log("Sub-model not found, placeholder active."); });
+            });
         }
-        // Gọi khởi tạo cho 3 ô phụ (Thay đổi link file .stl tương ứng nếu có)
-        initSubViewport('sub-three-1', 'model1.stl');
-        initSubViewport('sub-three-2', 'model2.stl');
-        initSubViewport('sub-three-3', 'model3.stl');
+        initSubViewport('sub-three-1', 'model.stl');
+        initSubViewport('sub-three-2', 'model.stl');
+        initSubViewport('sub-three-3', 'model.stl');
 
-        // 4. UI SCRIPTS (Clock, Loader, Reveal)
+        // 4. UI SCRIPTS
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
-        const loaderEl = document.getElementById('loader');
+        const loader = document.getElementById('loader');
         let progress = 0;
         const loadInt = setInterval(() => {
             progress += Math.floor(Math.random() * 15) + 5;
@@ -481,8 +491,9 @@
                 progress = 100; 
                 clearInterval(loadInt); 
                 setTimeout(() => { 
-                    loaderEl.classList.add('hidden');
+                    loader.classList.add('hidden');
                     window.scrollTo(0, 0);
+                    reveal(); // HIỆN NGAY LẬP TỨC KHI LOAD XONG
                 }, 500); 
             }
             loaderProgress.style.width = progress + '%';
@@ -495,12 +506,6 @@
         }
         setInterval(updateClock, 1000);
 
-        const reveal = () => {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
-            });
-        };
         window.addEventListener('scroll', () => {
             reveal();
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
