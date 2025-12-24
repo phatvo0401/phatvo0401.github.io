@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Võ Thành Phát | Portfolio 2025</title>
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -413,17 +417,22 @@
         initThree();
 
         // 3. UI SCRIPTS
-        // Fix Load trang: Ép trình duyệt luôn về đầu trang khi load/refresh
-        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-        window.scrollTo(0, 0);
-
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
         const loader = document.getElementById('loader');
         let progress = 0;
         const loadInt = setInterval(() => {
             progress += Math.floor(Math.random() * 15) + 5;
-            if (progress >= 100) { progress = 100; clearInterval(loadInt); setTimeout(() => { loader.classList.add('hidden'); }, 500); }
+            if (progress >= 100) { 
+                progress = 100; 
+                clearInterval(loadInt); 
+                setTimeout(() => { 
+                    loader.classList.add('hidden');
+                    // Force Scroll to Top after loader hides
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                }, 500); 
+            }
             loaderProgress.style.width = progress + '%';
             loaderNum.innerText = progress.toString().padStart(2, '0');
         }, 150);
@@ -455,7 +464,7 @@
         reveals.forEach(r => observer.observe(r));
 
         // Logic Menu & Scroll
-        let isInitialLoad = true; // Biến này quan trọng để tránh nhảy trang khi load
+        let isInitialLoad = true;
         window.addEventListener('scroll', () => {
             const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -479,14 +488,13 @@
                 if (l.getAttribute('href') === `#${current}`) {
                     l.classList.add('active');
                     
-                    // Fix Menu Mobile: Tự động trượt menu sang ngang khi Section thay đổi
+                    // Auto-scroll Menu Mobile
                     if (!isInitialLoad && !wasActive) {
                         l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     }
                 }
             });
-            // Sau khi người dùng bắt đầu cuộn, cho phép menu tự trượt
-            if (winScroll > 10) isInitialLoad = false;
+            if (winScroll > 50) isInitialLoad = false;
         });
 
         document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
