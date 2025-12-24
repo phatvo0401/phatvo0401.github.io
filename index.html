@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Võ Thành Phát | Portfolio 2025</title>
     <script>
-        // Cưỡng bức về đầu trang sau khi load (Tối ưu cho Mobile)
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
         window.scrollTo(0, 0);
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                window.scrollTo(0, 0);
-            }, 50);
-        });
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -48,7 +42,7 @@
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (pointer: fine) {
-            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action, .sub-viewport { cursor: none !important; }
+            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action { cursor: none !important; }
             #cursor { display: block; }
         }
         @media (pointer: coarse) { #cursor { display: none; } }
@@ -167,15 +161,6 @@
             position: relative; border-radius: 20px; border: 1px solid var(--border);
             background: #050a09; overflow: hidden; min-height: 400px;
             touch-action: none;
-        }
-
-        .sub-3d-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-            max-width: 1200px; margin: 20px auto 0;
-        }
-        .sub-viewport {
-            aspect-ratio: 1/1; border-radius: 15px; border: 1px solid rgba(57, 197, 187, 0.1);
-            background: var(--glass); overflow: hidden; position: relative;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -349,21 +334,6 @@
                 <div class="space-y-4 mt-8"><a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a><div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Center Aligned / XYZ Locked</div></div>
             </div>
         </div>
-
-        <div class="sub-3d-grid reveal">
-            <div class="sub-viewport" id="sub-three-1">
-                <div class="scan-line"></div>
-                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
-            </div>
-            <div class="sub-viewport" id="sub-three-2">
-                <div class="scan-line"></div>
-                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
-            </div>
-            <div class="sub-viewport" id="sub-three-3">
-                <div class="scan-line"></div>
-                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
-            </div>
-        </div>
     </section>
 
     <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
@@ -404,149 +374,130 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. 3D RENDER LOGIC
-        const stlLoader = new STLLoader();
+        // 2. STABLE 3D ENGINE
+        let scene, camera, renderer, controls, mesh;
+        const container = document.getElementById('three-container');
 
-        // Ô chính (Center)
-        function initMainViewport() {
-            const container = document.getElementById('three-container');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 140);
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 140); 
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
-
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const light = new THREE.DirectionalLight(0x39c5bb, 2);
-            light.position.set(20, 40, 20);
-            scene.add(light);
-
-            const grid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
-            grid.position.y = -35; grid.material.opacity = 0.2; grid.material.transparent = true;
-            scene.add(grid);
-
-            const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
-
-            stlLoader.load('model.stl', (geometry) => {
-                geometry.center();
-                const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
-                const mesh = new THREE.Mesh(geometry, material);
+            const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
+            mainLight.position.set(20, 40, 20);
+            scene.add(mainLight);
+            const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
+            polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
+            scene.add(polarGrid);
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; controls.dampingFactor = 0.05; controls.enablePan = false; 
+            controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
+            controls.enableZoom = true; controls.minDistance = 60; controls.maxDistance = 220;  
+            controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
+            const loader = new STLLoader();
+            loader.load('model.stl', function (geometry) {
+                geometry.center(); 
+                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 }));
                 mesh.rotation.x = -Math.PI / 2;
-                const box = new THREE.Box3().setFromObject(mesh);
-                const size = box.getSize(new THREE.Vector3());
-                const scale = 75 / Math.max(size.x, size.y, size.z);
-                mesh.scale.set(scale, scale, scale);
-                mesh.position.y = -10;
+                geometry.computeBoundingBox();
+                const bSize = new THREE.Vector3(); geometry.boundingBox.getSize(bSize);
+                const scale = 70 / Math.max(bSize.x, bSize.y, bSize.z); 
+                mesh.scale.set(scale, scale, scale); mesh.position.y = -35 + (bSize.z * scale / 2);
                 scene.add(mesh);
                 document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
             });
-
+            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
             function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
             animate();
-            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
         }
-
-        // 3 Ô phụ (Sub Viewports) - Đã sửa lỗi đứng thẳng
-        function initSubViewport(id, file) {
-            const container = document.getElementById(id);
-            if (!container) return;
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-            camera.position.z = 85;
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-            const light = new THREE.DirectionalLight(0x39c5bb, 2);
-            light.position.set(10, 10, 10);
-            scene.add(light);
-
-            stlLoader.load(file, (geometry) => {
-                geometry.center();
-                const mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, transparent: true, opacity: 0.8 }));
-                
-                // ĐIỀU CHỈNH ĐỂ ĐỨNG THẲNG: Xoay -90 độ trục X để khớp hệ tọa độ STL
-                mesh.rotation.x = -Math.PI / 2;
-                
-                const box = new THREE.Box3().setFromObject(mesh);
-                const size = box.getSize(new THREE.Vector3());
-                const scale = 50 / Math.max(size.x, size.y, size.z);
-                mesh.scale.set(scale, scale, scale);
-                scene.add(mesh);
-
-                function animateSub() {
-                    requestAnimationFrame(animateSub);
-                    // XOAY TRỤC Z: Để model xoay tròn nhưng vẫn đứng thẳng
-                    mesh.rotation.z += 0.015; 
-                    renderer.render(scene, camera);
-                }
-                animateSub();
-            }, undefined, () => console.log("Sub model not found, skipping..."));
-        }
-
-        initMainViewport();
-        initSubViewport('sub-three-1', 'model_1.stl');
-        initSubViewport('sub-three-2', 'model_2.stl');
-        initSubViewport('sub-three-3', 'model_3.stl');
+        initThree();
 
         // 3. UI SCRIPTS
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-        setInterval(updateClock, 1000);
-
-        const loaderEl = document.getElementById('loader');
-        const progressEl = document.getElementById('loader-progress');
-        const percentEl = document.getElementById('loader-num');
-        let loadP = 0;
-        const interval = setInterval(() => {
-            loadP += Math.floor(Math.random() * 15) + 5;
-            if(loadP >= 100) {
-                loadP = 100; clearInterval(interval);
-                setTimeout(() => loaderEl.classList.add('hidden'), 500);
+        const loaderProgress = document.getElementById('loader-progress');
+        const loaderNum = document.getElementById('loader-num');
+        const loader = document.getElementById('loader');
+        let progress = 0;
+        const loadInt = setInterval(() => {
+            progress += Math.floor(Math.random() * 15) + 5;
+            if (progress >= 100) { 
+                progress = 100; 
+                clearInterval(loadInt); 
+                setTimeout(() => { 
+                    loader.classList.add('hidden');
+                    // Force Scroll to Top after loader hides
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                }, 500); 
             }
-            progressEl.style.width = loadP + '%';
-            percentEl.innerText = loadP.toString().padStart(2, '0');
+            loaderProgress.style.width = progress + '%';
+            loaderNum.innerText = progress.toString().padStart(2, '0');
         }, 150);
 
+        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
+        setInterval(updateClock, 1000); updateClock();
+
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+        const avatarFrame = document.getElementById('interactive-avatar');
+        if (avatarFrame) {
+            document.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const { left, top, width, height } = avatarFrame.getBoundingClientRect();
+                const centerX = left + width / 2;
+                const centerY = top + height / 2;
+                let moveX = (clientX - centerX) / 35;
+                let moveY = (clientY - centerY) / 35;
+                moveX = Math.max(Math.min(moveX, 10), -10);
+                moveY = Math.max(Math.min(moveY, 10), -10);
+                avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
+            });
+            avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
+        }
+
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
+        reveals.forEach(r => observer.observe(r));
+
+        // Logic Menu & Scroll
+        let isInitialLoad = true;
         window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
+            if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
             
-            document.querySelectorAll('.reveal').forEach(r => {
-                if (r.getBoundingClientRect().top < window.innerHeight * 0.85) r.classList.add('active');
+            let current = "home";
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach(s => {
+                const sectionTop = s.offsetTop;
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+                    current = "contact";
+                } else if (winScroll >= (sectionTop - 300)) {
+                    current = s.getAttribute('id');
+                }
             });
-            
-            const backToTop = document.getElementById('backToTop');
-            if (window.scrollY > 500) backToTop.classList.add('show'); else backToTop.classList.remove('show');
+
+            document.querySelectorAll('.nav-link').forEach(l => {
+                const wasActive = l.classList.contains('active');
+                l.classList.remove('active');
+                if (l.getAttribute('href') === `#${current}`) {
+                    l.classList.add('active');
+                    
+                    // Auto-scroll Menu Mobile
+                    if (!isInitialLoad && !wasActive) {
+                        l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            });
+            if (winScroll > 50) isInitialLoad = false;
         });
 
-        document.getElementById('backToTop').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
-
-        const navLinks = document.querySelectorAll('.nav-link');
-        window.addEventListener('scroll', () => {
-            let current = "";
-            document.querySelectorAll('section').forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 100) current = section.getAttribute('id');
-            });
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').includes(current)) link.classList.add('active');
-            });
-        });
+        document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     </script>
 </body>
 </html>
