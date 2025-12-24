@@ -413,7 +413,7 @@
         initThree();
 
         // 3. UI SCRIPTS
-        // Fix: Ngăn trình duyệt tự cuộn xuống khi tải lại trang
+        // Fix Load trang: Ép trình duyệt luôn về đầu trang khi load/refresh
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
         window.scrollTo(0, 0);
 
@@ -454,8 +454,8 @@
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
         reveals.forEach(r => observer.observe(r));
 
-        // Sync Menu & Scroll: Thêm biến kiểm soát initialLoad để tránh nhảy trang
-        let isInitialLoad = true;
+        // Logic Menu & Scroll
+        let isInitialLoad = true; // Biến này quan trọng để tránh nhảy trang khi load
         window.addEventListener('scroll', () => {
             const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -478,13 +478,15 @@
                 l.classList.remove('active');
                 if (l.getAttribute('href') === `#${current}`) {
                     l.classList.add('active');
-                    // Chỉ thực hiện trượt menu ngang nếu không phải lúc vừa load trang
+                    
+                    // Fix Menu Mobile: Tự động trượt menu sang ngang khi Section thay đổi
                     if (!isInitialLoad && !wasActive) {
                         l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     }
                 }
             });
-            isInitialLoad = false;
+            // Sau khi người dùng bắt đầu cuộn, cho phép menu tự trượt
+            if (winScroll > 10) isInitialLoad = false;
         });
 
         document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
