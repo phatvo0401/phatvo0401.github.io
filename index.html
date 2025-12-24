@@ -26,8 +26,6 @@
             position: relative;
         }
 
-        /* ĐÃ LOẠI BỎ LỚP NOISE TẠI ĐÂY ĐỂ NỀN SẠCH HƠN */
-
         #nav-menu::-webkit-scrollbar { display: none; }
         #nav-menu { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
 
@@ -61,7 +59,7 @@
         .nav-link {
             transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
             border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
-            position: relative; flex-shrink: 0; display: inline-block;
+            position: relative; flex-shrink: 0;
         }
         .nav-link:hover { color: var(--miku) !important; }
         .nav-link.active {
@@ -95,7 +93,7 @@
             width: 180px; height: 180px; border-radius: 50%; 
             border: 2px solid var(--miku);
             overflow: hidden; background: #111;
-            transition: transform 0.2s ease-out;
+            transition: transform 0.4s ease-out; /* Làm mượt chuyển động xoay */
             will-change: transform;
         }
 
@@ -372,72 +370,36 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 0, 140); 
-
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
             mainLight.position.set(20, 40, 20);
             scene.add(mainLight);
-
-            const radius = 100;
-            const sectors = 16;
-            const rings = 8;
-            const polarGrid = new THREE.PolarGridHelper(radius, sectors, rings, 64, 0x39c5bb, 0x1a2e2c);
-            polarGrid.position.y = -35; 
-            polarGrid.material.opacity = 0.2;
-            polarGrid.material.transparent = true;
+            const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
+            polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
             scene.add(polarGrid);
-
             controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.enablePan = false; 
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 2.5;
-            controls.enableZoom = true;
-            controls.minDistance = 60;   
-            controls.maxDistance = 220;  
-            const angle30Deg = Math.PI / 3;
-            controls.minPolarAngle = angle30Deg;
-            controls.maxPolarAngle = angle30Deg;
-
+            controls.enableDamping = true; controls.dampingFactor = 0.05; controls.enablePan = false; 
+            controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
+            controls.enableZoom = true; controls.minDistance = 60; controls.maxDistance = 220;  
+            controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
             const loader = new STLLoader();
             loader.load('model.stl', function (geometry) {
                 geometry.center(); 
-                const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
-                mesh = new THREE.Mesh(geometry, material);
+                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 }));
                 mesh.rotation.x = -Math.PI / 2;
                 geometry.computeBoundingBox();
-                const bSize = new THREE.Vector3();
-                geometry.boundingBox.getSize(bSize);
-                const maxDim = Math.max(bSize.x, bSize.y, bSize.z);
-                const scale = 70 / maxDim; 
-                mesh.scale.set(scale, scale, scale);
-                mesh.position.y = -35 + (bSize.z * scale / 2);
+                const bSize = new THREE.Vector3(); geometry.boundingBox.getSize(bSize);
+                const scale = 70 / Math.max(bSize.x, bSize.y, bSize.z); 
+                mesh.scale.set(scale, scale, scale); mesh.position.y = -35 + (bSize.z * scale / 2);
                 scene.add(mesh);
                 document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
-                document.getElementById('model-name').innerText = "VTP_ENGINEERING_SCULPT";
-            }, undefined, (e) => {
-                console.error(e);
-                document.getElementById('poly-count').innerText = "STANDBY";
             });
-
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-            
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
+            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
+            function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
             animate();
         }
         initThree();
@@ -454,16 +416,13 @@
             loaderNum.innerText = progress.toString().padStart(2, '0');
         }, 150);
 
-        function updateClock() { const now = new Date(); document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
+        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
         setInterval(updateClock, 1000); updateClock();
 
         const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => { 
-            cursor.style.left = e.clientX + 'px'; 
-            cursor.style.top = e.clientY + 'px'; 
-        });
+        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
-        // KÍCH HOẠT LẠI HIỆU ỨNG TƯƠNG TÁC CHUỘT CHO AVATAR
+        // TINH CHỈNH AVATAR: NHẸ NHÀNG VÀ TINH TẾ (MAX 10 DEG)
         const avatarFrame = document.getElementById('interactive-avatar');
         if (avatarFrame) {
             document.addEventListener('mousemove', (e) => {
@@ -471,8 +430,12 @@
                 const { left, top, width, height } = avatarFrame.getBoundingClientRect();
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
-                const moveX = (clientX - centerX) / 15;
-                const moveY = (clientY - centerY) / 15;
+                // Giảm biên độ xoay xuống mức rất nhẹ
+                let moveX = (clientX - centerX) / 35;
+                let moveY = (clientY - centerY) / 35;
+                // Giới hạn tối đa 10 độ
+                moveX = Math.max(Math.min(moveX, 10), -10);
+                moveY = Math.max(Math.min(moveY, 10), -10);
                 avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
             });
             avatarFrame.addEventListener('mouseleave', () => {
@@ -484,26 +447,31 @@
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
         reveals.forEach(r => observer.observe(r));
 
-        const progressBar = document.getElementById('progress-bar');
+        // CẬP NHẬT LOGIC MENU ACTIVE (BAO GỒM CẢ CONTACT)
         window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            progressBar.style.width = (winScroll / height) * 100 + "%";
+            document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
             if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
             
-            // Logic Active Menu link khi scroll
             let current = "";
-            const sections = document.querySelectorAll('section');
-            sections.forEach(s => { if (winScroll >= (s.offsetTop - 200)) current = s.getAttribute('id'); });
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(l => { 
-                l.classList.remove('active'); 
-                if (l.getAttribute('href') === `#${current}`) l.classList.add('active'); 
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach(s => {
+                const sectionTop = s.offsetTop;
+                // Nếu cuộn gần tới cuối trang, ưu tiên Contact
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                    current = "contact";
+                } else if (winScroll >= (sectionTop - 300)) {
+                    current = s.getAttribute('id');
+                }
+            });
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('href') === `#${current}`) l.classList.add('active');
             });
         });
 
         document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
     </script>
 </body>
 </html>
