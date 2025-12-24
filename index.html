@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Võ Thành Phát | Portfolio 2025</title>
     <script>
+        // Cưỡng ép trình duyệt không lưu vị trí cuộn cũ
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
         window.scrollTo(0, 0);
     </script>
@@ -381,7 +382,7 @@
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // 1. DYNAMIC BACKGROUND (Keep original)
+        // 1. DYNAMIC BACKGROUND
         const heroCanvas = document.getElementById('hero-canvas');
         const hctx = heroCanvas.getContext('2d');
         let hW, hH;
@@ -398,29 +399,24 @@
         function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
         animateHero();
 
-        // 2. UNIVERSAL 3D VIEWER LOGIC (Added for 3 sub-viewports)
+        // 2. UNIVERSAL 3D VIEWER LOGIC
         function create3DViewer(elementId, modelUrl, isMain = false) {
             const dom = document.getElementById(elementId);
             if (!dom) return;
-
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(45, dom.clientWidth / dom.clientHeight, 0.1, 1000);
             camera.position.set(0, 0, isMain ? 140 : 120);
-
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(dom.clientWidth, dom.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             dom.appendChild(renderer.domElement);
-
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const light = new THREE.DirectionalLight(0x39c5bb, 2);
             light.position.set(20, 40, 20);
             scene.add(light);
-
             const grid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
             grid.position.y = -35; grid.material.opacity = 0.2; grid.material.transparent = true;
             scene.add(grid);
-
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
@@ -428,90 +424,117 @@
             controls.enableZoom = isMain;
             controls.minPolarAngle = Math.PI / 3;
             controls.maxPolarAngle = Math.PI / 3;
-
             const loader = new STLLoader();
             loader.load(modelUrl, (geometry) => {
                 geometry.center();
                 const material = new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.rotation.x = -Math.PI / 2;
-                
                 geometry.computeBoundingBox();
                 const size = new THREE.Vector3();
                 geometry.boundingBox.getSize(size);
                 const scale = (isMain ? 75 : 55) / Math.max(size.x, size.y, size.z);
                 mesh.scale.set(scale, scale, scale);
                 mesh.position.y = isMain ? -10 : -5;
-                
                 scene.add(mesh);
                 if (isMain) document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
             });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = dom.clientWidth / dom.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(dom.clientWidth, dom.clientHeight);
-            });
+            function anim() { requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); }
+            anim();
+            window.addEventListener('resize', () => { camera.aspect = dom.clientWidth / dom.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(dom.clientWidth, dom.clientHeight); });
         }
 
-        // Initialize All Viewports
-        window.addEventListener('load', () => {
-            create3DViewer('three-container', 'model.stl', true);
-            create3DViewer('sub-three-1', 'model.stl', false);
-            create3DViewer('sub-three-2', 'model.stl', false);
-            create3DViewer('sub-three-3', 'model.stl', false);
+        create3DViewer('three-container', 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/stl/ascii/slotted_disk.stl', true);
+        create3DViewer('sub-three-1', 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/stl/ascii/slotted_disk.stl');
+        create3DViewer('sub-three-2', 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/stl/ascii/slotted_disk.stl');
+        create3DViewer('sub-three-3', 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/stl/ascii/slotted_disk.stl');
+
+        // 3. UI LOGIC (SCROLL, CLOCK, MENU EFFECT)
+        const loader = document.getElementById('loader');
+        const progress = document.getElementById('loader-progress');
+        const loaderNum = document.getElementById('loader-num');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const navMenu = document.getElementById('nav-menu');
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('digital-clock').textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Loader & Scroll to Top Fix
+        let loadVal = 0;
+        const interval = setInterval(() => {
+            loadVal += Math.floor(Math.random() * 5) + 1;
+            if (loadVal >= 100) {
+                loadVal = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    // FIX: Đảm bảo cuộn lên đầu trang khi loader biến mất
+                    window.scrollTo(0, 0);
+                }, 500);
+            }
+            progress.style.width = loadVal + '%';
+            loaderNum.textContent = loadVal.toString().padStart(2, '0');
+        }, 30);
+
+        // Scroll & Active State Logic
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
+
+            const btt = document.getElementById('backToTop');
+            if (winScroll > 500) btt.classList.add('show'); else btt.classList.remove('show');
+
+            document.querySelectorAll('section').forEach(sec => {
+                const top = window.scrollY;
+                const offset = sec.offsetTop - 150;
+                const h = sec.offsetHeight;
+                const id = sec.getAttribute('id');
+                if (top >= offset && top < offset + h) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                            // FIX: Hiệu ứng cuộn menu mobile khi active
+                            const menuRect = navMenu.getBoundingClientRect();
+                            const linkRect = link.getBoundingClientRect();
+                            if (linkRect.left < menuRect.left || linkRect.right > menuRect.right) {
+                                navMenu.scrollTo({
+                                    left: link.offsetLeft - (menuRect.width / 2) + (linkRect.width / 2),
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
+            });
         });
 
-        // 3. UI LOGIC (Loader, Cursor, Clock - Keep original)
-        const loader = document.getElementById('loader');
-        const loaderProgress = document.getElementById('loader-progress');
-        const loaderNum = document.getElementById('loader-num');
-        let prog = 0;
-        const loadInt = setInterval(() => {
-            prog += Math.random() * 15;
-            if(prog >= 100) { prog = 100; clearInterval(loadInt); setTimeout(() => loader.classList.add('hidden'), 500); }
-            loaderProgress.style.width = prog + '%';
-            loaderNum.innerText = Math.floor(prog).toString().padStart(2, '0');
-        }, 100);
+        document.getElementById('backToTop').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
 
+        // Cursor & Interactive Logic
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        window.addEventListener('scroll', () => {
-            const scroll = window.scrollY;
-            const height = document.documentElement.scrollHeight - window.innerHeight;
-            document.getElementById('progress-bar').style.width = (scroll/height*100) + '%';
-            if(scroll > 400) document.getElementById('backToTop').classList.add('show');
-            else document.getElementById('backToTop').classList.remove('show');
-            
-            const sections = ['home', 'skills', 'career', 'projects', 'contact'];
-            sections.forEach(id => {
-                const el = document.getElementById(id);
-                if(el && scroll >= el.offsetTop - 100) {
-                    document.querySelectorAll('.nav-link').forEach(link => {
-                        link.classList.toggle('active', link.getAttribute('href') === '#'+id);
-                    });
-                }
-            });
+        const avatar = document.getElementById('interactive-avatar');
+        document.addEventListener('mousemove', (e) => {
+            if (!avatar) return;
+            const rect = avatar.getBoundingClientRect();
+            const x = (e.clientX - rect.left - rect.width/2) / 10;
+            const y = (e.clientY - rect.top - rect.height/2) / 10;
+            avatar.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
         });
-
-        document.getElementById('backToTop').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-        setInterval(() => { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
