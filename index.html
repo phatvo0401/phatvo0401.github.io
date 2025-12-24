@@ -26,8 +26,17 @@
             position: relative;
         }
 
+        /* Tối ưu hóa thanh menu cuộn trên Mobile */
+        #nav-menu { 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            scroll-behavior: smooth;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* Giúp cuộn mượt trên iOS */
+        }
         #nav-menu::-webkit-scrollbar { display: none; }
-        #nav-menu { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
 
         @media (pointer: fine) {
             body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action { cursor: none !important; }
@@ -93,7 +102,7 @@
             width: 180px; height: 180px; border-radius: 50%; 
             border: 2px solid var(--miku);
             overflow: hidden; background: #111;
-            transition: transform 0.4s ease-out; /* Làm mượt chuyển động xoay */
+            transition: transform 0.4s ease-out;
             will-change: transform;
         }
 
@@ -210,7 +219,7 @@
                 <span id="digital-clock" class="text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
             </div>
         </div>
-        <div id="nav-menu" class="flex items-center overflow-x-auto space-x-1 text-[10px] font-bold uppercase tracking-widest md:justify-end flex-grow">
+        <div id="nav-menu" class="flex items-center space-x-1 text-[10px] font-bold uppercase tracking-widest md:justify-end flex-grow">
             <a href="#home" class="nav-link active">Home</a>
             <a href="#skills" class="nav-link">Skills</a>
             <a href="#career" class="nav-link">Career</a>
@@ -422,7 +431,6 @@
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
-        // TINH CHỈNH AVATAR: NHẸ NHÀNG VÀ TINH TẾ (MAX 10 DEG)
         const avatarFrame = document.getElementById('interactive-avatar');
         if (avatarFrame) {
             document.addEventListener('mousemove', (e) => {
@@ -430,24 +438,20 @@
                 const { left, top, width, height } = avatarFrame.getBoundingClientRect();
                 const centerX = left + width / 2;
                 const centerY = top + height / 2;
-                // Giảm biên độ xoay xuống mức rất nhẹ
                 let moveX = (clientX - centerX) / 35;
                 let moveY = (clientY - centerY) / 35;
-                // Giới hạn tối đa 10 độ
                 moveX = Math.max(Math.min(moveX, 10), -10);
                 moveY = Math.max(Math.min(moveY, 10), -10);
                 avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
             });
-            avatarFrame.addEventListener('mouseleave', () => {
-                avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`;
-            });
+            avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
         }
 
         const reveals = document.querySelectorAll('.reveal');
         const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
         reveals.forEach(r => observer.observe(r));
 
-        // CẬP NHẬT LOGIC MENU ACTIVE (BAO GỒM CẢ CONTACT)
+        // Cập nhật Logic Menu: Đồng bộ Scroll và Tự động trượt menu sang ngang
         window.addEventListener('scroll', () => {
             const winScroll = window.pageYOffset;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -458,16 +462,20 @@
             const sections = document.querySelectorAll('section, footer');
             sections.forEach(s => {
                 const sectionTop = s.offsetTop;
-                // Nếu cuộn gần tới cuối trang, ưu tiên Contact
                 if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
                     current = "contact";
                 } else if (winScroll >= (sectionTop - 300)) {
                     current = s.getAttribute('id');
                 }
             });
+
             document.querySelectorAll('.nav-link').forEach(l => {
                 l.classList.remove('active');
-                if (l.getAttribute('href') === `#${current}`) l.classList.add('active');
+                if (l.getAttribute('href') === `#${current}`) {
+                    l.classList.add('active');
+                    // Tự động cuộn thanh menu sang ngang để mục active nằm giữa
+                    l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
             });
         });
 
