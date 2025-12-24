@@ -442,6 +442,51 @@
         }
         initThree();
 
+// Hàm hỗ trợ tạo nhanh các ô phụ
+function initSubView(containerId, modelPath) {
+    const subContainer = document.getElementById(containerId);
+    const subScene = new THREE.Scene();
+    const subCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    subCamera.position.z = 100;
+
+    const subRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    subRenderer.setSize(subContainer.clientWidth, subContainer.clientHeight);
+    subContainer.appendChild(subRenderer.domElement);
+
+    const subLight = new THREE.DirectionalLight(0x39c5bb, 2);
+    subLight.position.set(10, 10, 10);
+    subScene.add(subLight);
+    subScene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+    const stlLoader = new STLLoader();
+    stlLoader.load(modelPath, (geometry) => {
+        geometry.center();
+        const subMesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, transparent: true, opacity: 0.8 }));
+        
+        // Tự động scale model cho vừa ô nhỏ
+        geometry.computeBoundingBox();
+        const size = new THREE.Vector3();
+        geometry.boundingBox.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 50 / maxDim;
+        subMesh.scale.set(scale, scale, scale);
+        
+        subScene.add(subMesh);
+
+        function anim() {
+            requestAnimationFrame(anim);
+            subMesh.rotation.y += 0.01; // Xoay nhẹ cho đẹp
+            subRenderer.render(subScene, subCamera);
+        }
+        anim();
+    });
+}
+
+// Gọi hàm cho 3 ô phụ với 3 file khác nhau
+initSubView('sub-three-1', 'model.stl');
+initSubView('sub-three-2', 'model.stl');
+initSubView('sub-three-3', 'model.stl');
+        
         // 3. UI LOGIC (RESTORED FUNCTIONS)
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
@@ -519,3 +564,4 @@
     </script>
 </body>
 </html>
+
