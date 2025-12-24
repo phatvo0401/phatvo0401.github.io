@@ -42,7 +42,7 @@
         #nav-menu::-webkit-scrollbar { display: none; }
 
         @media (pointer: fine) {
-            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action { cursor: none !important; }
+            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action, .sub-viewport { cursor: none !important; }
             #cursor { display: block; }
         }
         @media (pointer: coarse) { #cursor { display: none; } }
@@ -143,6 +143,7 @@
         .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
         .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
 
+        /* 3D Grid Styles */
         .portfolio-grid-3d {
             display: grid; grid-template-columns: 1fr; gap: 20px;
             max-width: 1200px; margin: 0 auto; height: auto;
@@ -161,6 +162,16 @@
             position: relative; border-radius: 20px; border: 1px solid var(--border);
             background: #050a09; overflow: hidden; min-height: 400px;
             touch-action: none;
+        }
+
+        /* Thêm style cho 3 ô vuông bên dưới */
+        .sub-3d-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            max-width: 1200px; margin: 20px auto 0;
+        }
+        .sub-viewport {
+            aspect-ratio: 1/1; border-radius: 15px; border: 1px solid rgba(57, 197, 187, 0.1);
+            background: var(--glass); overflow: hidden; position: relative;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -334,6 +345,21 @@
                 <div class="space-y-4 mt-8"><a href="#contact" class="btn-action">YÊU CẦU THIẾT KẾ</a><div class="text-[9px] text-center text-gray-600 uppercase tracking-widest">Center Aligned / XYZ Locked</div></div>
             </div>
         </div>
+
+        <div class="sub-3d-grid reveal">
+            <div class="sub-viewport" id="sub-three-1">
+                <div class="scan-line"></div>
+                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
+            </div>
+            <div class="sub-viewport" id="sub-three-2">
+                <div class="scan-line"></div>
+                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
+            </div>
+            <div class="sub-viewport" id="sub-three-3">
+                <div class="scan-line"></div>
+                <div class="absolute top-2 left-2 border-t border-l border-[#39c5bb]/20 w-2 h-2"></div>
+            </div>
+        </div>
     </section>
 
     <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
@@ -416,10 +442,38 @@
         }
         initThree();
 
-        // 3. UI SCRIPTS
+        // 3. SUB-VIEWPORTS INITIALIZATION
+        function initSubViewport(id, file) {
+            const cont = document.getElementById(id);
+            const sScene = new THREE.Scene();
+            const sCam = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            sCam.position.set(0, 0, 100);
+            const sRen = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            sRen.setSize(cont.clientWidth, cont.clientHeight);
+            cont.appendChild(sRen.domElement);
+            sScene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const sL = new THREE.DirectionalLight(0x39c5bb, 1.5); sL.position.set(10, 20, 10); sScene.add(sL);
+            const sLoader = new STLLoader();
+            sLoader.load(file, (geo) => {
+                geo.center();
+                const m = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 30 }));
+                m.rotation.x = -Math.PI / 2;
+                const b = new THREE.Box3().setFromObject(m);
+                const s = 60 / b.getSize(new THREE.Vector3()).length();
+                m.scale.set(s, s, s); sScene.add(m);
+                function anim() { requestAnimationFrame(anim); m.rotation.z += 0.01; sRen.render(sScene, sCam); }
+                anim();
+            }, undefined, () => { console.log("Sub-model not found, placeholder active."); });
+        }
+        // Gọi khởi tạo cho 3 ô phụ (Thay đổi link file .stl tương ứng nếu có)
+        initSubViewport('sub-three-1', 'model1.stl');
+        initSubViewport('sub-three-2', 'model2.stl');
+        initSubViewport('sub-three-3', 'model3.stl');
+
+        // 4. UI SCRIPTS (Clock, Loader, Reveal)
         const loaderProgress = document.getElementById('loader-progress');
         const loaderNum = document.getElementById('loader-num');
-        const loader = document.getElementById('loader');
+        const loaderEl = document.getElementById('loader');
         let progress = 0;
         const loadInt = setInterval(() => {
             progress += Math.floor(Math.random() * 15) + 5;
@@ -427,77 +481,41 @@
                 progress = 100; 
                 clearInterval(loadInt); 
                 setTimeout(() => { 
-                    loader.classList.add('hidden');
-                    // Force Scroll to Top after loader hides
+                    loaderEl.classList.add('hidden');
                     window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
                 }, 500); 
             }
             loaderProgress.style.width = progress + '%';
             loaderNum.innerText = progress.toString().padStart(2, '0');
-        }, 150);
+        }, 100);
 
-        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
-        setInterval(updateClock, 1000); updateClock();
-
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
-
-        const avatarFrame = document.getElementById('interactive-avatar');
-        if (avatarFrame) {
-            document.addEventListener('mousemove', (e) => {
-                const { clientX, clientY } = e;
-                const { left, top, width, height } = avatarFrame.getBoundingClientRect();
-                const centerX = left + width / 2;
-                const centerY = top + height / 2;
-                let moveX = (clientX - centerX) / 35;
-                let moveY = (clientY - centerY) / 35;
-                moveX = Math.max(Math.min(moveX, 10), -10);
-                moveY = Math.max(Math.min(moveY, 10), -10);
-                avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
-            });
-            avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
         }
+        setInterval(updateClock, 1000);
 
-        const reveals = document.querySelectorAll('.reveal');
-        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
-        reveals.forEach(r => observer.observe(r));
-
-        // Logic Menu & Scroll
-        let isInitialLoad = true;
+        const reveal = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
+            });
+        };
         window.addEventListener('scroll', () => {
-            const winScroll = window.pageYOffset;
+            reveal();
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
-            if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
-            
-            let current = "home";
-            const sections = document.querySelectorAll('section, footer');
-            sections.forEach(s => {
-                const sectionTop = s.offsetTop;
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
-                    current = "contact";
-                } else if (winScroll >= (sectionTop - 300)) {
-                    current = s.getAttribute('id');
-                }
-            });
-
-            document.querySelectorAll('.nav-link').forEach(l => {
-                const wasActive = l.classList.contains('active');
-                l.classList.remove('active');
-                if (l.getAttribute('href') === `#${current}`) {
-                    l.classList.add('active');
-                    
-                    // Auto-scroll Menu Mobile
-                    if (!isInitialLoad && !wasActive) {
-                        l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }
-                }
-            });
-            if (winScroll > 50) isInitialLoad = false;
+            if (winScroll > 300) document.getElementById('backToTop').classList.add('show');
+            else document.getElementById('backToTop').classList.remove('show');
         });
 
-        document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('backToTop').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+        document.addEventListener('mousemove', e => {
+            const c = document.getElementById('cursor');
+            c.style.left = e.clientX + 'px';
+            c.style.top = e.clientY + 'px';
+        });
     </script>
 </body>
 </html>
