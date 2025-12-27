@@ -27,20 +27,18 @@
 
         body { 
     font-family: 'Lexend', sans-serif; 
-    background-color: #050a09;
+    /* Khu trung tâm: Màu xanh Miku tối cực độ (Dark Miku) */
+    background-color: #050f0e; 
     
     background-image: 
-        /* 1. Điểm sáng Xanh Miku ở góc dưới bên trái (giúp phần dưới rõ màu hơn) */
-        radial-gradient(at 0% 100%, rgba(57, 197, 187, 0.15) 0px, transparent 20%),
+        /* 1. Góc trên bên phải: Xanh Navy đậm */
+        radial-gradient(at 0% 0%, #0a0a2a 0%, transparent 20%),
         
-        /* 2. Điểm sáng Xanh Miku ở góc dưới bên phải */
-        radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.15) 0px, transparent 20%),
-        
-        /* 3. Phủ một lớp Navy sâu ở phía trên */
-        linear-gradient(to bottom, #050510 0%, #050510 30%, transparent 50%),
+        /* 2. Góc dưới bên phải: Xanh Miku rực hơn */
+        radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.2) 0%, transparent 20%),
 
-        /* 4. Lớp màu nền chuyển tiếp để kết nối */
-        radial-gradient(at 50% 50%, #0a0a1a 0px, transparent 80%);
+        /* 3. Phủ nhẹ một lớp trung tâm để làm dịu độ tương phản */
+        radial-gradient(at 50% 50%, rgba(10, 26, 25, 0.8) 0%, transparent 80%);
 
     background-attachment: fixed;
     color: #e6f7f6; 
@@ -587,5 +585,6 @@
     </script>
 </body>
 </html>
+
 
 
