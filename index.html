@@ -27,14 +27,25 @@
 
         body { 
     font-family: 'Lexend', sans-serif; 
-    background-color: var(--bg-deep); 
+    background-color: #050510; /* Nền Navy tối chủ đạo */
+    
     background-image: 
-        radial-gradient(at 0% 0%, rgba(57, 197, 187, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, var(--nebula-glow) 0px, transparent 50%),
+        /* 1. Điểm sáng Xanh Miku ở góc dưới bên trái (giúp phần dưới rõ màu hơn) */
+        radial-gradient(at 0% 100%, rgba(57, 197, 187, 0.17) 0px, transparent 50%),
+        
+        /* 2. Điểm sáng Xanh Miku ở góc dưới bên phải */
+        radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.17) 0px, transparent 50%),
+        
+        /* 3. Phủ một lớp Navy sâu ở phía trên */
+        linear-gradient(to bottom, #050510 0%, #050510 30%, transparent 80%),
+
+        /* 4. Lớp màu nền chuyển tiếp để kết nối */
         radial-gradient(at 50% 50%, #0a0a1a 0px, transparent 80%);
+
     background-attachment: fixed;
     color: #e6f7f6; 
-    /* Giữ các thuộc tính khác như overflow, position... */
+    overflow-x: hidden;
+    position: relative;
 }
 
         #nav-menu { 
@@ -576,3 +587,4 @@
     </script>
 </body>
 </html>
+
