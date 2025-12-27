@@ -171,13 +171,23 @@
         }
         @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
 
+        /* CẬP NHẬT NÚT ACTION TẠI ĐÂY */
         .btn-action {
-            background: var(--miku); color: #050a09; font-weight: 800;
+            background: transparent; 
+            color: var(--miku); 
+            border: 1px solid var(--miku);
+            font-weight: 800;
             padding: 12px; border-radius: 8px; font-size: 11px; text-align: center;
-            display: block; width: 100%; transition: 0.3s; cursor: pointer;
+            display: block; width: 100%; transition: all 0.3s ease; cursor: pointer;
             text-transform: uppercase; letter-spacing: 1px;
         }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 197, 187, 0.4); }
+        .btn-action:hover { 
+            color: #ffffff;
+            background: rgba(57, 197, 187, 0.1);
+            box-shadow: 0 0 20px rgba(57, 197, 187, 0.4), inset 0 0 10px rgba(57, 197, 187, 0.2);
+            border-color: rgba(57, 197, 187, 1);
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body class="scroll-smooth">
@@ -559,5 +569,3 @@
     </script>
 </body>
 </html>
-
-
