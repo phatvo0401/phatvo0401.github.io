@@ -474,8 +474,24 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
+            // 1. Ánh sáng môi trường (Làm sáng tổng thể các vùng tối, tăng cường độ lên 1.5 hoặc 2)
+const ambientLight = new THREE.AmbientLight(0xffffff, 2.0); 
+scene.add(ambientLight);
+
+// 2. Ánh sáng chính diện (Từ phía trước trên cao)
+const frontLight = new THREE.DirectionalLight(0xffffff, 2.5);
+frontLight.position.set(0, 50, 100);
+scene.add(frontLight);
+
+// 3. Ánh sáng ngược (Từ phía sau để làm rõ khối)
+const backLight = new THREE.DirectionalLight(0x39c5bb, 1.5); // Pha chút màu Miku cho nghệ thuật
+backLight.position.set(0, 50, -100);
+scene.add(backLight);
+
+// 4. Ánh sáng bổ trợ từ bên cạnh
+const sideLight = new THREE.DirectionalLight(0xffffff, 1.5);
+sideLight.position.set(100, 0, 0);
+scene.add(sideLight);;
             mainLight.position.set(20, 40, 20);
             scene.add(mainLight);
             const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
@@ -585,6 +601,7 @@
     </script>
 </body>
 </html>
+
 
 
 
