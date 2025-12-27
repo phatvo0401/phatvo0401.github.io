@@ -13,7 +13,6 @@
     <style>
         :root { 
             --miku: #39c5bb; 
-            --violet: #8b5cf6;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(57, 197, 187, 0.2);
         }
@@ -22,123 +21,542 @@
             font-family: 'Lexend', sans-serif; 
             background-color: #050a09; 
             background-image: 
-                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.05) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(57, 197, 187, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.05) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(10, 31, 29, 0.5) 0px, transparent 80%);
             background-attachment: fixed;
             color: #e6f7f6; 
             overflow-x: hidden;
+            position: relative;
         }
 
+        #nav-menu { 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            scroll-behavior: smooth;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        #nav-menu::-webkit-scrollbar { display: none; }
+
+        @media (pointer: fine) {
+            body, a, button, .skill-tag, .project-card, .avatar-frame, .btn-action { cursor: none !important; }
+            #cursor { display: block; }
+        }
+        @media (pointer: coarse) { #cursor { display: none; } }
+
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050a09; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s;
+        }
+        #loader.hidden { transform: translateY(-100%); opacity: 0; visibility: hidden; }
+        .loader-content { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .loader-logo { display: flex; align-items: center; font-size: 1.125rem; letter-spacing: -0.05em; margin-bottom: 20px; }
+        .loader-bar-container { width: 150px; height: 2px; background: rgba(57, 197, 187, 0.1); position: relative; overflow: hidden; border-radius: 2px; }
+        #loader-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--miku); transition: width 0.2s ease; }
+        .loader-percentage { font-family: monospace; font-size: 5rem; font-weight: 900; color: rgba(57, 197, 187, 0.3); position: absolute; bottom: 5%; right: 5%; }
+
         .miku-text { color: var(--miku); }
-        .violet-text { color: var(--violet); }
+        #cursor {
+            width: 20px; height: 20px; border: 2px solid var(--miku); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            transition: transform 0.1s ease-out, background 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-link {
+            transition: all 0.3s ease; width: 80px; text-align: center; padding: 6px 0;
+            border-radius: 9999px; border: 1px solid transparent; color: #ffffff;
+            position: relative; flex-shrink: 0;
+        }
+        .nav-link:hover { color: var(--miku) !important; }
+        .nav-link.active {
+            color: var(--miku) !important;
+            border: 1px solid rgba(57, 197, 187, 0.5) !important;
+            background: rgba(57, 197, 187, 0.1);
+        }
+
+        #hero-canvas-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+            overflow: hidden; pointer-events: none; z-index: 0;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
         
-        .contact-title-gradient {
-            background: linear-gradient(90deg, var(--miku), var(--violet));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-            font-style: italic;
-            font-weight: 900;
-            text-transform: uppercase;
+        @keyframes floatRandom {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(15px, -20px) rotate(5deg); }
+            66% { transform: translate(-10px, -35px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .adobe-icon { 
+            position: absolute; 
+            animation: floatRandom 10s infinite ease-in-out; 
+            filter: grayscale(100%) brightness(150%); 
+            opacity: 0.15;
+            transition: opacity 0.5s ease;
+        }
+
+        .avatar-container { perspective: 1000px; margin-bottom: 2rem; }
+        .avatar-frame {
+            width: 180px; height: 180px; border-radius: 50%; 
+            border: 2px solid var(--miku);
+            overflow: hidden; background: #111;
+            transition: transform 0.4s ease-out;
+            will-change: transform;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover { 
+            background: rgba(57, 197, 187, 0.05); 
+            border-color: rgba(57, 197, 187, 0.3); 
+            transform: translateY(-5px); 
+        }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 60; background: transparent; }
+        #progress-bar { height: 100%; width: 0%; background: var(--miku); box-shadow: 0 0 10px var(--miku); }
+        .skill-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; transition: all 0.3s ease; }
+        .skill-tag:hover { border-color: var(--miku); background: rgba(57, 197, 187, 0.1); scale: 1.05; }
+        
+        .project-card { position: relative; overflow: hidden; border-radius: 16px; background: #0a0f0e; aspect-ratio: 16/10; }
+        .project-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .project-card:hover .project-img { transform: scale(1.08); } 
+        
+        .project-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,10,9,0.9) 0%, rgba(5,10,9,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+        .timeline-container { position: relative; border-left: 1.5px solid rgba(57, 197, 187, 0.2); margin-left: 1.5rem; }
+        .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 3.5rem; }
+        .timeline-dot { width: 12px; height: 12px; background: var(--miku); border-radius: 50%; position: absolute; left: -7px; top: 7px; border: 2px solid #050a09; }
+        #backToTop { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; background: rgba(57, 197, 187, 0.1); border: 1px solid var(--miku); color: var(--miku); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px); }
+        #backToTop.show { opacity: 1; visibility: visible; }
+        .social-link { display: inline-block; transition: all 0.3s ease; color: #4a5d71; letter-spacing: 0.3em; }
+        .social-link:hover { color: var(--miku); text-shadow: 0 0 8px var(--miku); transform: translateY(-3px); }
+
+        .portfolio-grid-3d {
+            display: grid; grid-template-columns: 1fr; gap: 20px;
+            max-width: 1200px; margin: 0 auto; height: auto;
+        }
+        @media (min-width: 1024px) {
+            .portfolio-grid-3d { grid-template-columns: 280px 1fr 280px; height: 500px; }
+        }
+
+        .info-card-3d {
+            background: var(--glass); border: 1px solid rgba(57, 197, 187, 0.1);
+            border-radius: 15px; padding: 24px; backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .viewport-box {
+            position: relative; border-radius: 20px; border: 1px solid var(--border);
+            background: #050a09; overflow: hidden; min-height: 400px;
+            touch-action: none;
         }
 
         .hud-label { font-size: 10px; color: var(--miku); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-        .info-card-3d { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 24px; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: space-between; }
-        .viewport-box { position: relative; border-radius: 20px; border: 1px solid var(--border); background: #000; overflow: hidden; min-height: 400px; }
         
-        .btn-action { background: var(--miku); color: #050a09; font-weight: 800; padding: 12px; border-radius: 8px; font-size: 11px; text-align: center; display: block; width: 100%; transition: 0.3s; text-transform: uppercase; }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 197, 187, 0.4); }
+        .scan-line {
+            position: absolute; width: 100%; height: 1px; background: var(--miku);
+            opacity: 0.2; top: 0; animation: scanMove 3s linear infinite; pointer-events: none;
+        }
+        @keyframes scanMove { 0% { top: 0%; } 100% { top: 100%; } }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        .btn-action {
+            background: var(--miku); color: #050a09; font-weight: 800;
+            padding: 12px; border-radius: 8px; font-size: 11px; text-align: center;
+            display: block; width: 100%; transition: 0.3s; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 197, 187, 0.4); }
     </style>
 </head>
-<body>
+<body class="scroll-smooth">
 
-    <main class="max-w-7xl mx-auto py-20 px-6">
-        <div class="flex justify-between items-end mb-12 reveal">
-            <div>
-                <h3 class="text-2xl font-black miku-text uppercase tracking-tighter">ĐIÊU KHẮC & MÔ HÌNH HÓA 3D</h3>
-                <p class="text-gray-500 text-[10px] mt-1 uppercase tracking-[0.2em] font-bold">
-                    3D Digital Sculpting & Modeling <span class="mx-2">|</span> High-Fidelity Solutions
-                </p>
+    <div id="hero-canvas-container">
+        <canvas id="hero-canvas"></canvas>
+        <div class="adobe-icon" style="top: 19%; left: 25%; animation-duration: 12s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-photoshop-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Ps"></div>
+        <div class="adobe-icon" style="top: 30%; left: 80%; animation-duration: 15s; animation-delay: -2s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-illustrator-cc-3.svg" class="w-10 md:w-14 h-10 md:h-14" alt="Ai"></div>
+        <div class="adobe-icon" style="top: 40%; left: 22%; animation-duration: 18s; animation-delay: -5s;"><img src="https://cdn.worldvectorlogo.com/logos/after-effects-1.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Ae"></div>
+        <div class="adobe-icon" style="top: 60%; left: 35%; animation-duration: 14s; animation-delay: -1s;"><img src="https://cdn.worldvectorlogo.com/logos/premiere-pro-cc.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Pr"></div>
+        <div class="adobe-icon" style="top: 75%; left: 20%; animation-duration: 16s; animation-delay: -3s;"><img src="https://cdn.worldvectorlogo.com/logos/capcut-3.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Cc"></div>
+        <div class="adobe-icon" style="top: 20%; left: 65%; animation-duration: 20s; animation-delay: -4s;"><img src="https://cdn.worldvectorlogo.com/logos/blender-2.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Bl"></div>
+        <div class="adobe-icon" style="top: 55%; left: 85%; animation-duration: 13s; animation-delay: -7s;"><img src="https://cdn.worldvectorlogo.com/logos/figma-icon.svg" class="w-8 md:w-10 h-8 md:h-10" alt="Fg"></div>
+        <div class="adobe-icon" style="top: 60%; left: 70%; animation-duration: 17s;"><img src="https://cdn.worldvectorlogo.com/logos/adobe-indesign-cc-icon.svg" class="w-8 md:w-12 h-8 md:h-12" alt="Id"></div>
+    </div>
+
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-logo"><span class="font-black miku-text mr-1.5 uppercase">VTP</span><span class="font-light text-white opacity-90">Design</span></div>
+            <div class="loader-bar-container"><div id="loader-progress"></div></div>
+        </div>
+        <div id="loader-num" class="loader-percentage">00</div>
+    </div>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+    <div id="cursor"></div>
+
+    <nav class="fixed w-full z-50 py-3 px-4 md:px-10 flex justify-between items-center bg-[#050a09]/70 backdrop-blur-xl border-b border-white/5">
+        <div class="flex flex-col flex-shrink-0 mr-6">
+            <div class="text-md md:text-lg flex items-center tracking-tighter">
+                <span class="font-black miku-text mr-1.5 uppercase">VTP</span>
+                <span class="font-light text-white opacity-90">Design</span>
             </div>
-            <a href="https://phatvo0401.github.io/phatvo0401.3D.github.io/" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">XEM KHO LƯU TRỮ</a>
+            <div class="flex flex-col space-y-0.5 mt-1">
+                <div class="items-center space-x-1.5 hidden md:flex">
+                    <div class="relative flex h-1.5 w-1.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39c5bb] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#39c5bb]"></span>
+                    </div>
+                    <span class="text-[8px] font-bold uppercase tracking-widest text-gray-400">Available</span>
+                </div>
+                <span id="digital-clock" class="text-[8px] font-mono text-gray-500 tracking-wider">00:00:00 AM</span>
+            </div>
+        </div>
+        <div id="nav-menu" class="flex items-center space-x-1 text-[10px] font-bold uppercase tracking-widest md:justify-end flex-grow">
+            <a href="#home" class="nav-link active">Home</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#career" class="nav-link">Career</a>
+            <a href="#projects" class="nav-link">Work</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-12 relative z-10">
+        <div class="text-center mb-16 reveal">
+            <div class="avatar-container">
+                <div class="avatar-frame mx-auto" id="interactive-avatar">
+                    <img src="avt.JPG" alt="Võ Thành Phát" class="w-full h-full object-cover pointer-events-none" onerror="this.src='https://i.postimg.cc/mD8p7f8p/miku-placeholder.jpg'">
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-7xl font-black mb-4 uppercase">VÕ THÀNH <span class="miku-text">PHÁT</span></h1>
+            <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-500 uppercase">Graphic Designer / Content Creator</h2>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr_300px] gap-6 reveal">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl items-start mt-10">
+            <div class="text-left px-4 reveal">
+                <h3 class="miku-text text-[14px] font-bold tracking-[0.1em] mb-4 mt-2">VỀ BẢN THÂN</h3>
+                <p class="text-xl text-gray-300 leading-relaxed italic border-l-2 border-miku/30 pl-6">
+                    "Ngoài thiết kế, mình còn là một nhà sưu tầm. Những chiếc máy Cassette cũ và nắp phén chai là nguồn cảm hứng cho sự tỉ mỉ của mình."
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
+                    <div><h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">HỌC VẤN</h4><p class="text-lg font-bold text-white">Đại học Văn Lang</p></div>
+                    <p class="text-gray-500 text-[10px] mt-2">Khoa Mỹ thuật & Thiết kế (K27) - Chuyên ngành Thiết kế Đồ họa</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between min-h-[180px] reveal">
+                    <div><h4 class="miku-text text-[12px] font-bold tracking-widest mb-4">THÀNH TỰU</h4><p class="text-lg font-bold text-white">Giải Nhất Thiết kế Logo - MTTQ Việt Nam</p></div>
+                    <p class="text-gray-500 text-[10px] mt-2">Huyện Củ Chi - Nhiệm kỳ (2024-2029)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
+        <div class="mb-16 reveal">
+            <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG CÔNG CỤ</h3>
+            <div class="flex flex-wrap gap-3">
+                <span class="skill-tag">Photoshop</span> <span class="skill-tag">Illustrator</span> <span class="skill-tag">InDesign</span> 
+                <span class="skill-tag">Figma</span> <span class="skill-tag">After Effects</span> <span class="skill-tag">Premiere Pro</span>
+                <span class="skill-tag">CapCut Pro</span> <span class="skill-tag">Blender</span>
+            </div>
+        </div>
+        <div class="reveal">
+            <h3 class="text-2xl font-black mb-8 miku-text uppercase tracking-tighter">KỸ NĂNG MỀM</h3>
+            <div class="flex flex-wrap gap-3">
+                <span class="skill-tag">English (B2)</span> <span class="skill-tag">Videography</span> <span class="skill-tag">Photography</span>
+                <span class="skill-tag">Graphic Design</span> <span class="skill-tag">UI / UX</span> <span class="skill-tag">Branding Design</span>
+                <span class="skill-tag">Motion Design</span> <span class="skill-tag">3D Design</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="career" class="py-24 px-6 max-w-4xl mx-auto border-t border-[#39c5bb]/10">
+        <h2 class="text-2xl font-black mb-16 miku-text uppercase tracking-tighter reveal">KINH NGHIỆM LÀM VIỆC</h2>
+        <div class="timeline-container">
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Merjea_Somewhere-in-town</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Định hướng hình ảnh, quay dựng video sáng tạo và quản trị nội dung số nhằm tối ưu hóa nhận diện thương hiệu.</p>
+            </div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Toku Friends Fansub</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2025 – Hiện tại</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế Poster, Banner và các ấn phẩm truyền thông cộng đồng với phong cách đồ họa hiện đại, đột phá.</p>
+            </div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Bắp Rang Bơ Media</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Video Editor & Media Manager</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Điều phối hậu kỳ video và định hướng phong cách hình ảnh cho kênh YouTube đạt hơn 23.7K Subscribers.</p>
+            </div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Golden Rooster Collection</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2024 – Hiện tại</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Media & Content Creator</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Phát triển nội dung đa nền tảng cho TikTok (356K Followers) và YouTube (73.8K Subscribers) trong phân khúc mô hình cao cấp.</p>
+            </div>
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                <div class="flex flex-col md:flex-row md:justify-between items-start mb-2">
+                    <h4 class="text-lg font-bold text-gray-100 uppercase">Gaoogao.com Shop</h4>
+                    <span class="text-[10px] miku-text font-mono font-bold bg-[#39c5bb]/10 px-3 py-1 rounded-full mt-1 md:mt-0">2022 – Hiện tại</span>
+                </div>
+                <p class="text-emerald-500/80 text-[10px] font-bold mb-2 uppercase tracking-widest">Graphic Designer & Branding</p>
+                <p class="text-gray-500 text-xs leading-relaxed">Thiết kế bao bì và hệ thống nhận diện thương hiệu đồng bộ, phục vụ chiến dịch quảng bá tại điểm bán.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-24 px-6 max-w-6xl mx-auto border-t border-[#39c5bb]/10">
+        <div class="flex justify-between items-end mb-16 reveal">
+            <div><h3 class="text-2xl font-black miku-text uppercase tracking-tighter">PROJECT SPOTLIGHT</h3><p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">Selected Works 2024 - 2025</p></div>
+            <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL BEHANCE</a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-24">
+            <div class="md:col-span-7 project-card reveal"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Branding"><div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Graphic Designer & Branding</span><h4 class="text-xl font-bold uppercase">Gaoogao.com Shop</h4></div></div>
+            <div class="md:col-span-5 project-card reveal" style="transition-delay: 0.1s"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Video"><div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media Production</span><h4 class="text-xl font-bold uppercase">Golden Rooster Collection</h4></div></div>
+            <div class="md:col-span-5 project-card reveal"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="UIUX"><div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media & Content Creator</span><h4 class="text-xl font-bold uppercase">Merjea_Somewhere-in-town</h4></div></div>
+            <div class="md:col-span-7 project-card reveal" style="transition-delay: 0.1s"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1200" class="project-img" alt="Social"><div class="project-overlay"><span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Video Editor & Media Manager</span><h4 class="text-xl font-bold uppercase">Bắp Rang Bơ Media</h4></div></div>
+        </div>
+
+        <div class="flex justify-between items-end mb-16 reveal">
+            <div>
+                <h3 class="text-2xl font-black miku-text uppercase tracking-tighter">3D DIGITAL SCULPTING & MODELING</h3>
+                <p class="text-gray-500 text-[10px] mt-2 uppercase tracking-[0.2em] font-bold">High-Fidelity 3D Solutions | Giải pháp thiết kế 3D chuyên sâu</p>
+            </div>
+            <a href="https://phatvo0401.github.io/phatvo0401.3D.github.io/" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">EXPLORE ARCHIVE</a>
+        </div>
+
+        <div class="portfolio-grid-3d reveal">
             <div class="info-card-3d">
                 <div>
-                    <div class="hud-label mb-4">Triết lý thiết kế</div>
-                    <p class="text-[12px] text-gray-200 leading-relaxed mb-2 font-medium">
-                        Tập trung vào <span class="text-white">Thẩm mỹ Công nghiệp</span> và <span class="text-white">Độ chính xác Kỹ thuật</span>.
+                    <div class="hud-label mb-4">Design Philosophy</div>
+                    <p class="text-[11px] text-gray-400 leading-relaxed mb-3">
+                        Focusing on <span class="text-white">Industrial Aesthetics</span> and <span class="text-white">Precision Modeling</span>. Every mesh is optimized for seamless 3D printing and high-end visualization.
                     </p>
                     <p class="text-[10px] text-gray-500 italic leading-relaxed">
-                        Focusing on Industrial Aesthetics and Precision Modeling. Every mesh is optimized for seamless 3D printing.
+                        Tập trung vào thẩm mỹ công nghiệp và độ chính xác kỹ thuật. Mọi mô hình đều được tối ưu cho in 3D và diễn họa cao cấp.
                     </p>
                 </div>
                 <div class="space-y-4 mt-8">
-                    <div class="hud-label">Thông số kỹ thuật</div>
-                    <div class="text-[11px] border-b border-white/5 pb-2 flex justify-between">
-                        <span class="text-gray-500">Độ chi tiết</span>
-                        <span id="poly-count" class="miku-text font-bold">Đang tính...</span>
-                    </div>
-                    <div class="text-[11px] flex justify-between">
-                        <span class="text-gray-500">Tiêu chuẩn</span>
-                        <span class="miku-text font-bold uppercase">Sẵn sàng in 3D / STL</span>
-                    </div>
+                    <div class="hud-label">Technical Output</div>
+                    <div class="text-[11px] border-b border-white/5 pb-2 flex justify-between"><span class="text-gray-500">Geometry</span><span id="poly-count" class="miku-text">Calculating...</span></div>
+                    <div class="text-[11px] flex justify-between"><span class="text-gray-500">Standard</span><span class="miku-text uppercase">Print Ready / STL</span></div>
                 </div>
             </div>
 
             <div class="viewport-box" id="three-container">
-                <div class="absolute inset-0 pointer-events-none border-[1px] border-miku/10 rounded-2xl"></div>
+                <div class="scan-line"></div>
+                <div class="absolute top-4 left-4 border-t border-l border-[#39c5bb]/40 w-4 h-4"></div>
+                <div class="absolute bottom-4 right-4 border-b border-r border-[#39c5bb]/40 w-4 h-4"></div>
                 <div class="absolute bottom-6 left-6 pointer-events-none">
-                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">HỆ THỐNG: ĐANG HIỂN THỊ MÔ HÌNH</div>
+                    <div class="text-[9px] miku-text opacity-60 font-mono italic uppercase tracking-widest">VIEWPORT_LOCKED: CENTERED_AXIS</div>
                 </div>
             </div>
 
             <div class="info-card-3d">
                 <div>
-                    <div class="hud-label mb-4">Phạm vi dịch vụ</div>
-                    <p class="text-xs text-gray-100 font-bold uppercase mb-2" id="model-name">Phát triển 3D theo yêu cầu</p>
-                    <p class="text-[12px] text-gray-200 leading-relaxed mb-2">
-                        Từ ý tưởng sơ phác đến <span class="miku-text">Mẫu thử nghiệm kỹ thuật số</span> chuyên nghiệp.
+                    <div class="hud-label mb-4">Service Scope</div>
+                    <p class="text-xs text-gray-100 font-bold uppercase mb-2" id="model-name">Custom 3D Development</p>
+                    <p class="text-[11px] text-gray-400 leading-relaxed">
+                        From conceptual sketches to <span class="miku-text">Digital Prototypes</span>. Providing professional 3D assets for branding and manufacturing.
                     </p>
-                    <p class="text-[10px] text-gray-500 italic">
-                        From conceptual sketches to Digital Prototypes. Providing professional 3D assets for branding.
+                    <p class="text-[10px] text-gray-500 italic mt-2">
+                        Từ ý tưởng sơ phác đến mẫu thử nghiệm kỹ thuật số. Cung cấp tài nguyên 3D chuyên nghiệp cho thương hiệu và sản xuất.
                     </p>
                 </div>
                 <div class="space-y-4 mt-8">
-                    <a href="#contact" class="btn-action">BẮT ĐẦU DỰ ÁN / CONTACT ME</a>
-                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest leading-tight">
-                        Worldwide Delivery<br>Hỗ trợ dự án toàn quốc & quốc tế
-                    </div>
+                    <a href="#contact" class="btn-action">START A PROJECT / LIÊN HỆ DỰ ÁN</a>
+                    <div class="text-[9px] text-center text-gray-600 uppercase tracking-widest leading-tight">Worldwide Delivery<br>Hỗ trợ dự án toàn quốc</div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
     <footer id="contact" class="py-32 text-center border-t border-[#39c5bb]/10 reveal">
-        <h3 class="text-2xl mb-10 contact-title-gradient">Cùng nhau tạo nên điều khác biệt</h3>
-        <p class="text-gray-400 text-[10px] block mb-4 uppercase tracking-[0.3em]">Let's work together</p>
-        <p class="text-lg font-bold mb-2 text-white">phatvo.0401@gmail.com</p>
+        <h3 class="text-xl font-black mb-10 miku-text italic">Let's work together</h3>
+        <p class="text-lg font-bold mb-2">phatvo.0401@gmail.com</p>
         <p class="text-gray-500 text-[11px] uppercase tracking-[0.2em] mb-12">038 477 2414 | CỦ CHI, TP. HỒ CHÍ MINH</p>
-        
         <div class="flex justify-center gap-8 md:gap-16 mb-20 text-[10px] font-bold">
             <a href="https://www.facebook.com/phatvo.0401/" target="_blank" class="social-link">FACEBOOK</a>
             <a href="https://www.instagram.com/phatvo.0401/" target="_blank" class="social-link">INSTAGRAM</a>
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="social-link">BEHANCE</a>
         </div>
+        <div class="pt-8 border-t border-white/5"><p class="text-slate-600 text-[9px] uppercase tracking-[0.5em] leading-loose">© 2025 VTP Design — Portfolio Website <br>All Rights Reserved — Created by Võ Thành Phát</p></div>
     </footer>
 
-    <script>
-        // Hiệu ứng Reveal đơn giản
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
+    <button id="backToTop">↑</button>
+
+    <script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }</script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // 1. DYNAMIC BACKGROUND
+        const heroCanvas = document.getElementById('hero-canvas');
+        const hctx = heroCanvas.getContext('2d');
+        let hW, hH;
+        function resizeHero() { hW = heroCanvas.width = window.innerWidth; hH = heroCanvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeHero);
+        resizeHero();
+        class MikuLine {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * hW; this.y = Math.random() * -hH; this.speed = Math.random() * 3 + 2; this.len = Math.random() * 80 + 40; this.opacity = Math.random() * 0.4 + 0.1; }
+            update() { this.y += this.speed; if (this.y > hH) this.init(); }
+            draw() { hctx.beginPath(); let g = hctx.createLinearGradient(0, this.y, 0, this.y + this.len); g.addColorStop(0, 'transparent'); g.addColorStop(1, `rgba(57, 197, 187, ${this.opacity})`); hctx.strokeStyle = g; hctx.lineWidth = 1; hctx.moveTo(this.x, this.y); hctx.lineTo(this.x, this.y + this.len); hctx.stroke(); }
+        }
+        const lines = Array.from({length: 50}, () => new MikuLine());
+        function animateHero() { hctx.clearRect(0,0,hW,hH); lines.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(animateHero); }
+        animateHero();
+
+        // 2. STABLE 3D ENGINE
+        let scene, camera, renderer, controls, mesh;
+        const container = document.getElementById('three-container');
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 140); 
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const mainLight = new THREE.DirectionalLight(0x39c5bb, 2);
+            mainLight.position.set(20, 40, 20);
+            scene.add(mainLight);
+            const polarGrid = new THREE.PolarGridHelper(100, 16, 8, 64, 0x39c5bb, 0x1a2e2c);
+            polarGrid.position.y = -35; polarGrid.material.opacity = 0.2; polarGrid.material.transparent = true;
+            scene.add(polarGrid);
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; controls.dampingFactor = 0.05; controls.enablePan = false; 
+            controls.autoRotate = true; controls.autoRotateSpeed = 2.5;
+            controls.enableZoom = true; controls.minDistance = 60; controls.maxDistance = 220;  
+            controls.minPolarAngle = Math.PI / 3; controls.maxPolarAngle = Math.PI / 3;
+            const loader = new STLLoader();
+            loader.load('mario-kart-1.stl', function (geometry) {
+                geometry.center(); 
+                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0x39c5bb, specular: 0x111111, shininess: 100 }));
+                mesh.rotation.x = -Math.PI / 2;
+                geometry.computeBoundingBox();
+                const bSize = new THREE.Vector3(); geometry.boundingBox.getSize(bSize);
+                const scale = 70 / Math.max(bSize.x, bSize.y, bSize.z); 
+                mesh.scale.set(scale, scale, scale); mesh.position.y = -35 + (bSize.z * scale / 2);
+                scene.add(mesh);
+                document.getElementById('poly-count').innerText = (geometry.attributes.position.count / 3).toLocaleString() + ' Polys';
             });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            window.addEventListener('resize', () => { camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
+            function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+            animate();
+        }
+        initThree();
+
+        // 3. UI SCRIPTS
+        const loaderProgress = document.getElementById('loader-progress');
+        const loaderNum = document.getElementById('loader-num');
+        const loader = document.getElementById('loader');
+        let progress = 0;
+        const loadInt = setInterval(() => {
+            progress += Math.floor(Math.random() * 15) + 5;
+            if (progress >= 100) { 
+                progress = 100; 
+                clearInterval(loadInt); 
+                setTimeout(() => { 
+                    loader.classList.add('hidden');
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                }, 500); 
+            }
+            loaderProgress.style.width = progress + '%';
+            loaderNum.innerText = progress.toString().padStart(2, '0');
+        }, 150);
+
+        function updateClock() { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase(); }
+        setInterval(updateClock, 1000); updateClock();
+
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+        const avatarFrame = document.getElementById('interactive-avatar');
+        if (avatarFrame) {
+            document.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const { left, top, width, height } = avatarFrame.getBoundingClientRect();
+                const centerX = left + width / 2;
+                const centerY = top + height / 2;
+                let moveX = (clientX - centerX) / 35;
+                let moveY = (clientY - centerY) / 35;
+                moveX = Math.max(Math.min(moveX, 10), -10);
+                moveY = Math.max(Math.min(moveY, 10), -10);
+                avatarFrame.style.transform = `rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
+            });
+            avatarFrame.addEventListener('mouseleave', () => { avatarFrame.style.transform = `rotateX(0deg) rotateY(0deg)`; });
+        }
+
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
+        reveals.forEach(r => observer.observe(r));
+
+        let isInitialLoad = true;
+        window.addEventListener('scroll', () => {
+            const winScroll = window.pageYOffset;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
+            if (winScroll > 500) document.getElementById('backToTop').classList.add('show'); else document.getElementById('backToTop').classList.remove('show');
+            
+            let current = "home";
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach(s => {
+                const sectionTop = s.offsetTop;
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+                    current = "contact";
+                } else if (winScroll >= (sectionTop - 300)) {
+                    current = s.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(l => {
+                const wasActive = l.classList.contains('active');
+                l.classList.remove('active');
+                if (l.getAttribute('href') === `#${current}`) {
+                    l.classList.add('active');
+                    if (!isInitialLoad && !wasActive) {
+                        l.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            });
+            if (winScroll > 50) isInitialLoad = false;
+        });
+
+        document.getElementById('backToTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     </script>
 </body>
 </html>
