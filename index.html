@@ -12,23 +12,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --miku: #39c5bb; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(57, 197, 187, 0.2);
-        }
+    --miku: #39c5bb; 
+    --bg-deep: #050510; /* Màu nền Navy đậm của P.án 1 */
+    --nebula-glow: rgba(45, 27, 78, 0.4); /* Ánh tím than huyền bí */
+    --glass: rgba(57, 197, 187, 0.03);
+    --border: rgba(57, 197, 187, 0.2);
+}
         
+.glass-card {
+    background: rgba(255, 255, 255, 0.02); /* Giảm độ đục xuống mức cực thấp */
+    backdrop-filter: blur(12px); 
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+}
+
         body { 
-            font-family: 'Lexend', sans-serif; 
-            background-color: #050a09; 
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(57, 197, 187, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(57, 197, 187, 0.05) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(10, 31, 29, 0.5) 0px, transparent 80%);
-            background-attachment: fixed;
-            color: #e6f7f6; 
-            overflow-x: hidden;
-            position: relative;
-        }
+    font-family: 'Lexend', sans-serif; 
+    background-color: var(--bg-deep); 
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(57, 197, 187, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, var(--nebula-glow) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, #0a0a1a 0px, transparent 80%);
+    background-attachment: fixed;
+    color: #e6f7f6; 
+    /* Giữ các thuộc tính khác như overflow, position... */
+}
 
         #nav-menu { 
             -ms-overflow-style: none; 
@@ -569,4 +576,3 @@
     </script>
 </body>
 </html>
-
