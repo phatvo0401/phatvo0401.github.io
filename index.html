@@ -20,6 +20,24 @@
     --border: rgba(57, 197, 187, 0.2);
 }
         
+.masonry-wrapper {
+    column-count: 1; /* Mặc định 1 cột cho mobile */
+    column-gap: 1.5rem; /* Tương đương gap-6 */
+    margin-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+    .masonry-wrapper {
+        column-count: 2; /* Chia làm 2 cột chính trên desktop */
+    }
+}
+
+.masonry-item {
+    break-inside: avoid; /* Ngăn item bị cắt đôi khi sang cột mới */
+    margin-bottom: 1.5rem; /* Khoảng cách dưới của mỗi card */
+    display: block;
+}
+
 .glass-card {
     background: rgba(255, 255, 255, 0.02); /* Giảm độ đục xuống mức cực thấp */
     backdrop-filter: blur(12px); 
@@ -383,8 +401,8 @@
             <a href="https://www.behance.net/phtthnh42" target="_blank" class="text-[10px] font-bold border-b border-miku pb-1 miku-text tracking-widest hover:opacity-70 transition-opacity">VIEW ALL BEHANCE</a>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-24 items-start">
-    <a href="https://phatvo0401.github.io/tapchi/" class="md:col-span-5 project-card reveal block cursor-none">
+        <div class="masonry-wrapper">
+    <a href="https://phatvo0401.github.io/tapchi/" class="masonry-item project-card reveal block cursor-none">
         <img src="Tạp Chí.JPG" class="project-img w-full h-auto" alt="Digital Magazine">
         <div class="project-overlay">
             <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Editorial Design</span>
@@ -392,7 +410,7 @@
         </div>
     </a>
 
-    <a href="https://phatvo0401.github.io/nhandien/" class="md:col-span-7 project-card reveal block cursor-none" style="transition-delay: 0.1s">
+    <a href="https://phatvo0401.github.io/nhandien/" class="masonry-item project-card reveal block cursor-none">
         <img src="Nhận diện.png" class="project-img w-full h-auto" alt="Video">
         <div class="project-overlay">
             <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media Production</span>
@@ -400,7 +418,7 @@
         </div>
     </a>
 
-    <a href="LINK_CUA_BAN_3" class="md:col-span-8 project-card reveal block cursor-none">
+    <a href="LINK_CUA_BAN_3" class="masonry-item project-card reveal block cursor-none">
         <img src="Motion.jpg" class="project-img w-full h-auto" alt="UIUX">
         <div class="project-overlay">
             <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Media & Content Creator</span>
@@ -408,7 +426,7 @@
         </div>
     </a>
 
-    <a href="LINK_CUA_BAN_4" class="md:col-span-4 project-card reveal block cursor-none" style="transition-delay: 0.1s">
+    <a href="LINK_CUA_BAN_4" class="masonry-item project-card reveal block cursor-none">
         <img src="Chiến dịch.png" class="project-img w-full h-auto" alt="Social">
         <div class="project-overlay">
             <span class="text-[10px] miku-text font-bold tracking-widest uppercase mb-1">Video Editor</span>
@@ -631,33 +649,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
